@@ -1145,30 +1145,42 @@
         @media print {
             body {
                 background: white !important;
+                margin: 0 !important;
+                padding: 0 !important;
             }
-            .preset-buttons, .action-buttons, footer, .close-report-btn, .print-btn {
+            
+            /* Hide everything by default */
+            header, .dashboard, .container > *, footer, .action-buttons {
                 display: none !important;
             }
-            .card {
-                break-inside: avoid;
-                box-shadow: none !important;
-                border: 1px solid #ddd !important;
+            
+            /* Hide all buttons in report */
+            .close-report-btn, .print-btn {
+                display: none !important;
             }
-            .dashboard {
-                display: block !important;
-            }
+            
+            /* Only show the report */
             .print-report {
                 display: block !important;
                 position: relative !important;
                 padding: 0 !important;
+                background: white !important;
             }
+            
             .print-report-content {
                 box-shadow: none !important;
                 padding: 20px !important;
+                margin: 0 !important;
             }
+            
             .report-section {
                 page-break-inside: avoid;
             }
+            
+            .report-header {
+                border-bottom: 3px solid #6366f1 !important;
+            }
+            
             .logo-circle {
                 background: white !important;
                 border: 2px solid #e5e7eb !important;
@@ -1176,9 +1188,19 @@
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
             }
+            
             .report-section h2 {
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
+            }
+            
+            .report-table {
+                page-break-inside: auto;
+            }
+            
+            .report-table tr {
+                page-break-inside: avoid;
+                page-break-after: auto;
             }
         }
     </style>
@@ -3938,24 +3960,29 @@
 
         // Export to PDF - Generate Professional Report
         function exportToPDF() {
-            // First calculate the mix to ensure results are up-to-date
-            calculateMix(false);
-            
-            // Get report container or create it
-            let reportContainer = document.getElementById('printReportContainer');
-            if (!reportContainer) {
-                reportContainer = document.createElement('div');
-                reportContainer.id = 'printReportContainer';
-                reportContainer.className = 'print-report';
-                document.body.appendChild(reportContainer);
+            try {
+                // First calculate the mix to ensure results are up-to-date
+                calculateMix(false);
+                
+                // Get report container or create it
+                let reportContainer = document.getElementById('printReportContainer');
+                if (!reportContainer) {
+                    reportContainer = document.createElement('div');
+                    reportContainer.id = 'printReportContainer';
+                    reportContainer.className = 'print-report';
+                    document.body.appendChild(reportContainer);
+                }
+                
+                // Generate report content
+                const reportHTML = generateReportHTML();
+                reportContainer.innerHTML = reportHTML;
+                
+                // Show the report
+                reportContainer.classList.add('active');
+            } catch (error) {
+                console.error('Error generating report:', error);
+                alert('Error generating report: ' + error.message);
             }
-            
-            // Generate report content
-            const reportHTML = generateReportHTML();
-            reportContainer.innerHTML = reportHTML;
-            
-            // Show the report
-            reportContainer.classList.add('active');
         }
 
         // Generate QR Code
@@ -4123,104 +4150,132 @@
         function generateReportHTML() {
             const date = new Date().toLocaleString();
             
+            // Helper function to safely get element value
+            const safeGetValue = (id, defaultValue = '') => {
+                const element = document.getElementById(id);
+                if (!element) {
+                    console.warn(`Element not found: ${id}`);
+                    return defaultValue;
+                }
+                return element.value || defaultValue;
+            };
+            
+            const safeGetTextContent = (id, defaultValue = '') => {
+                const element = document.getElementById(id);
+                if (!element) {
+                    console.warn(`Element not found: ${id}`);
+                    return defaultValue;
+                }
+                return element.textContent || defaultValue;
+            };
+            
+            const safeGetChecked = (id) => {
+                const element = document.getElementById(id);
+                if (!element) {
+                    console.warn(`Element not found: ${id}`);
+                    return false;
+                }
+                return element.checked || false;
+            };
+            
             // Get all input values
-            const grade = document.getElementById('concreteGrade').value;
-            const targetStrength = grade === 'custom' ? document.getElementById('targetStrength').value : grade;
-            const exposure = document.getElementById('exposure').value;
-            const placement = document.getElementById('placementType').value;
-            const slump = document.getElementById('slump').value;
-            const cementType = document.getElementById('cementType').value;
-            const cementSG = document.getElementById('cementSG').value;
-            const fineAggType = document.getElementById('fineAggType').value;
-            const fineSG = document.getElementById('fineSG').value;
-            const coarseSG = document.getElementById('coarseSG').value;
-            const maxAggSize = document.getElementById('maxAggSize').value;
-            const fineAggPercent = (parseFloat(document.getElementById('fineAggPercent').value) * 100).toFixed(0);
+            const grade = safeGetValue('concreteGrade', '30');
+            const targetStrength = grade === 'custom' ? safeGetValue('targetStrength', '30') : grade;
+            const exposure = safeGetValue('exposure', 'moderate');
+            const placement = safeGetValue('placementType', 'normal');
+            const slump = safeGetValue('slump', '100');
+            const cementType = safeGetValue('cementType', 'opc53');
+            const cementSG = safeGetValue('cementSG', '3.15');
+            const fineAggType = safeGetValue('fineAggType', 'natural');
+            const fineSG = safeGetValue('fineSG', '2.65');
+            const coarseSG = safeGetValue('coarseSG', '2.70');
+            const maxAggSize = safeGetValue('maxAggSize', '20');
+            const fineAggPercent = (parseFloat(safeGetValue('fineAggPercent', '0.38')) * 100).toFixed(0);
             const coarseAggPercent = (100 - parseFloat(fineAggPercent)).toFixed(0);
             
             // Get SCM details
-            const useFlyAsh = document.getElementById('useFlyAsh').checked;
-            const useGGBS = document.getElementById('useGGBS').checked;
-            const useSilicaFume = document.getElementById('useSilicaFume').checked;
-            const useMetakaolin = document.getElementById('useMetakaolin').checked;
-            const useRHA = document.getElementById('useRHA').checked;
+            const useFlyAsh = safeGetChecked('useFlyAsh');
+            const useGGBS = safeGetChecked('useGGBS');
+            const useSilicaFume = safeGetChecked('useSilicaFume');
+            const useMetakaolin = safeGetChecked('useMetakaolin');
+            const useRHA = safeGetChecked('useRHA');
             
             // Get admixture details
-            const useSuperplasticizer = document.getElementById('useSuperplasticizer').checked;
-            const useAirEntraining = document.getElementById('useAirEntraining').checked;
-            const useRetarder = document.getElementById('useRetarder').checked;
-            const useAccelerator = document.getElementById('useAccelerator').checked;
-            const useViscosity = document.getElementById('useViscosity').checked;
-            const useFoamAgent = document.getElementById('useFoamAgent').checked;
-            const useFibers = document.getElementById('useFibers').checked;
-            const useWaterproofing = document.getElementById('useWaterproofing').checked;
+            const useSuperplasticizer = safeGetChecked('useSuperplasticizer');
+            const useAirEntraining = safeGetChecked('useAirEntraining');
+            const useRetarder = safeGetChecked('useRetarder');
+            const useAccelerator = safeGetChecked('useAccelerator');
+            const useViscosity = safeGetChecked('useViscosity');
+            const useFoamAgent = safeGetChecked('useFoamAgent');
+            const useFibers = safeGetChecked('useFibers');
+            const useWaterproofing = safeGetChecked('useWaterproofing');
             
             // Get results
-            const opcResult = document.getElementById('cementResult').textContent;
-            const totalCementResult = document.getElementById('totalCementResult').textContent;
-            const waterResult = document.getElementById('waterResult').textContent;
-            const fineResult = document.getElementById('fineResult').textContent;
-            const coarseResult = document.getElementById('coarseResult').textContent;
-            const wcRatio = document.getElementById('wcRatio').textContent;
-            const mixStrength = document.getElementById('mixStrength').textContent;
-            const concreteType = document.getElementById('concreteTypeBadge').textContent;
+            const opcResult = safeGetTextContent('cementResult', '0');
+            const totalCementResult = safeGetTextContent('totalCementResult', '0');
+            const waterResult = safeGetTextContent('waterResult', '0');
+            const fineResult = safeGetTextContent('fineResult', '0');
+            const coarseResult = safeGetTextContent('coarseResult', '0');
+            const wcRatio = safeGetTextContent('wcRatio', '0.45');
+            const mixStrength = safeGetTextContent('mixStrength', '30');
+            const concreteType = safeGetTextContent('concreteTypeBadge', 'NORMAL CONCRETE');
             
             let scmRows = '';
             if (useFlyAsh) {
-                const percent = document.getElementById('flyAshPercent').value;
-                const type = document.getElementById('flyAshClass').value;
+                const percent = safeGetValue('flyAshPercent', '25');
+                const type = safeGetValue('flyAshClass', 'classF');
                 scmRows += `<tr><td>Fly Ash (${type === 'classF' ? 'Class F' : 'Class C'})</td><td>${percent}%</td></tr>`;
             }
             if (useGGBS) {
-                const percent = document.getElementById('ggbsPercent').value;
+                const percent = safeGetValue('ggbsPercent', '40');
                 scmRows += `<tr><td>GGBS (Slag Cement)</td><td>${percent}%</td></tr>`;
             }
             if (useSilicaFume) {
-                const percent = document.getElementById('silicaFumePercent').value;
+                const percent = safeGetValue('silicaFumePercent', '7');
                 scmRows += `<tr><td>Silica Fume</td><td>${percent}%</td></tr>`;
             }
             if (useMetakaolin) {
-                const percent = document.getElementById('metakaolinPercent').value;
+                const percent = safeGetValue('metakaolinPercent', '10');
                 scmRows += `<tr><td>Metakaolin</td><td>${percent}%</td></tr>`;
             }
             if (useRHA) {
-                const percent = document.getElementById('rhaPercent').value;
+                const percent = safeGetValue('rhaPercent', '15');
                 scmRows += `<tr><td>Rice Husk Ash</td><td>${percent}%</td></tr>`;
             }
             
             let admixtureRows = '';
             if (useSuperplasticizer) {
-                const dosage = document.getElementById('superplasticizerDosage').value;
+                const dosage = safeGetValue('superplasticizerDosage', '1.0');
                 admixtureRows += `<tr><td>Superplasticizer (PCE)</td><td>${dosage}% by cement weight</td></tr>`;
             }
             if (useAirEntraining) {
-                const content = document.getElementById('airContent').value;
+                const content = safeGetValue('airContent', '5');
                 admixtureRows += `<tr><td>Air-Entraining Agent</td><td>${content}% air content</td></tr>`;
             }
             if (useRetarder) {
-                const dosage = document.getElementById('retarderDosage').value;
+                const dosage = safeGetValue('retarderDosage', '0.3');
                 admixtureRows += `<tr><td>Retarder</td><td>${dosage}% by cement weight</td></tr>`;
             }
             if (useAccelerator) {
-                const dosage = document.getElementById('acceleratorDosage').value;
+                const dosage = safeGetValue('acceleratorDosage', '2.0');
                 admixtureRows += `<tr><td>Accelerator</td><td>${dosage}% by cement weight</td></tr>`;
             }
             if (useViscosity) {
-                const dosage = document.getElementById('viscosityDosage').value;
+                const dosage = safeGetValue('viscosityDosage', '0.5');
                 admixtureRows += `<tr><td>Viscosity Modifying Agent</td><td>${dosage}% by cement weight</td></tr>`;
             }
             if (useFoamAgent) {
-                const dosage = document.getElementById('foamAgentDosage').value;
-                const density = document.getElementById('foamDensity').value;
+                const dosage = safeGetValue('foamAgentDosage', '3');
+                const density = safeGetValue('foamDensity', '1000');
                 admixtureRows += `<tr><td>Foaming Agent</td><td>${dosage}% (Target density: ${density} kg/m³)</td></tr>`;
             }
             if (useFibers) {
-                const type = document.getElementById('fiberType').value;
-                const dosage = document.getElementById('fiberDosage').value;
+                const type = safeGetValue('fiberType', 'steel');
+                const dosage = safeGetValue('fiberDosage', '30');
                 admixtureRows += `<tr><td>Fibers (${type})</td><td>${dosage} kg/m³</td></tr>`;
             }
             if (useWaterproofing) {
-                const dosage = document.getElementById('waterproofingDosage').value;
+                const dosage = safeGetValue('waterproofingDosage', '2');
                 admixtureRows += `<tr><td>Waterproofing Agent</td><td>${dosage}% by cement weight</td></tr>`;
             }
             
