@@ -1538,12 +1538,17 @@
                 </div>
 
                 <div id="foamAgentOptions" style="display: none; background: #fff3e0; padding: 15px; border-radius: 10px; margin-top: 10px; border: 2px solid #ffa726;">
-                    <div class="info-box" style="margin: 0 0 15px 0;">
-                        <p style="margin: 0; font-size: 0.85rem;"><strong>Foam Concrete Standards:</strong><br>
-                        • Ultra-Light: 400-600 kg/m³ (Insulation)<br>
-                        • Light: 600-1000 kg/m³ (Blocks, Roof fill)<br>
-                        • Medium: 1000-1400 kg/m³ (Partition walls)<br>
-                        • Structural Light: 1400-1800 kg/m³ (Low-rise construction)</p>
+                    <div class="info-box" style="margin: 0 0 15px 0; background: #e3f2fd; border-left: 4px solid #2196f3; padding: 10px;">
+                        <p style="margin: 0 0 8px 0; font-size: 0.9rem; font-weight: bold; color: #1565c0;">📋 Foam Concrete Standards:</p>
+                        <p style="margin: 0; font-size: 0.8rem; line-height: 1.5;">
+                        <strong>ASTM C796</strong> - Foaming Agents | <strong>ACI 523.3R</strong> - Cellular Concrete Guide<br>
+                        <strong>BS 8110</strong> - Structural Use | <strong>IS 2185 (Part 4)</strong> - Masonry Units<br><br>
+                        <strong>Density Classifications:</strong><br>
+                        • 300-600 kg/m³: Non-structural (Insulation, thermal barrier)<br>
+                        • 600-900 kg/m³: Lightweight fill (Roof fill, void filling, trench reinstatement)<br>
+                        • 900-1200 kg/m³: Masonry units (Blocks, partition walls)<br>
+                        • 1200-1600 kg/m³: Structural lightweight (Low-rise, composite structures)<br>
+                        • 1600-1800 kg/m³: Load-bearing (Designed structures, slabs)</p>
                     </div>
                     <div class="form-group">
                         <label>Target Density (kg/m³) <span class="label-info">Range: 400-1800 kg/m³</span></label>
@@ -1566,6 +1571,22 @@
                             <option value="protein">Protein-based (Natural)</option>
                             <option value="synthetic" selected>Synthetic (Chemical)</option>
                         </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Foam Expansion Ratio <span class="label-info">Volume of foam produced per unit of foam agent</span></label>
+                        <div style="margin: 15px 0;">
+                            <input type="range" id="foamExpansionRatio" value="20" step="1" min="10" max="30" oninput="updateSliderValue('foamExpansion'); calculateMix(false)" style="width: 100%;">
+                        </div>
+                        <span class="slider-value" id="foamExpansionValue" style="background: linear-gradient(135deg, #ffa726, #fb8c00);">20:1</span>
+                        <span class="label-benefit">✓ Higher ratio = Lower density & cost</span>
+                    </div>
+                    <div class="form-group">
+                        <label>Target Air Content (Void %) <span class="label-info">Typical: 40-80%</span></label>
+                        <div style="margin: 15px 0;">
+                            <input type="range" id="foamAirContent" value="60" step="5" min="40" max="80" oninput="updateSliderValue('foamAir'); calculateMix(false)" style="width: 100%;">
+                        </div>
+                        <span class="slider-value" id="foamAirValue" style="background: linear-gradient(135deg, #ffa726, #fb8c00);">60%</span>
+                        <span class="label-benefit" id="foamAirBenefit">✓ Medium void content - Balanced properties</span>
                     </div>
                 </div>
 
@@ -2142,7 +2163,7 @@
                     break;
 
                 case 'foam':
-                    // STANDARD: Foam concrete = OPC + Foam Agent (fly ash optional, not required)
+                    // STANDARD: Foam concrete = OPC + Foam Agent (Per ASTM C796, ACI 523.3R)
                     document.getElementById('concreteGrade').value = '10';
                     document.getElementById('exposure').value = 'mild';
                     document.getElementById('slump').value = '175';
@@ -2150,8 +2171,15 @@
                     toggleAdmixture('foamAgent');
                     document.getElementById('foamDensity').value = '1000';
                     document.getElementById('foamAgentDosage').value = '3';
+                    document.getElementById('foamExpansionRatio').value = '20';
+                    document.getElementById('foamAirContent').value = '60';
                     document.getElementById('fineAggPercent').value = '100';
                     document.getElementById('maxAggSize').value = '10';
+                    // Update slider displays
+                    updateSliderValue('foamDensity');
+                    updateSliderValue('foamAgent');
+                    updateSliderValue('foamExpansion');
+                    updateSliderValue('foamAir');
                     break;
 
                 case 'fiber':
@@ -2374,16 +2402,50 @@
                     const density = parseFloat(slider.value);
                     valueDisplay.textContent = density + ' kg/m³';
                     
-                    // Update category based on density
+                    // Update category based on STANDARD density classifications
                     if (categoryLabel) {
                         if (density < 600) {
-                            categoryLabel.textContent = '✓ Ultra-Light - Insulation';
-                        } else if (density < 1000) {
-                            categoryLabel.textContent = '✓ Light - Blocks, Roof fill';
-                        } else if (density < 1400) {
-                            categoryLabel.textContent = '✓ Medium - Partition walls';
+                            categoryLabel.textContent = '✓ Non-structural - Insulation, thermal barrier';
+                        } else if (density < 900) {
+                            categoryLabel.textContent = '✓ Lightweight fill - Roof fill, void filling';
+                        } else if (density < 1200) {
+                            categoryLabel.textContent = '✓ Masonry units - Blocks, partition walls';
+                        } else if (density < 1600) {
+                            categoryLabel.textContent = '✓ Structural lightweight - Low-rise construction';
                         } else {
-                            categoryLabel.textContent = '✓ Structural Light - Low-rise construction';
+                            categoryLabel.textContent = '✓ Load-bearing - Designed structures, slabs';
+                        }
+                    }
+                }
+                return;
+            }
+            
+            // Handle foam expansion ratio
+            if (type === 'foamExpansion') {
+                slider = document.getElementById('foamExpansionRatio');
+                valueDisplay = document.getElementById('foamExpansionValue');
+                if (slider && valueDisplay) {
+                    valueDisplay.textContent = slider.value + ':1';
+                }
+                return;
+            }
+            
+            // Handle foam air content
+            if (type === 'foamAir') {
+                slider = document.getElementById('foamAirContent');
+                valueDisplay = document.getElementById('foamAirValue');
+                const benefitLabel = document.getElementById('foamAirBenefit');
+                if (slider && valueDisplay) {
+                    const airContent = parseFloat(slider.value);
+                    valueDisplay.textContent = airContent + '%';
+                    
+                    if (benefitLabel) {
+                        if (airContent < 50) {
+                            benefitLabel.textContent = '✓ Low void - Higher strength & density';
+                        } else if (airContent < 70) {
+                            benefitLabel.textContent = '✓ Medium void - Balanced properties';
+                        } else {
+                            benefitLabel.textContent = '✓ High void - Maximum insulation, lightweight';
                         }
                     }
                 }
@@ -2506,14 +2568,48 @@
             let applications = '';
             let characteristics = '';
 
-            // Foam Concrete - check first
+            // Foam Concrete - check first (Per ASTM C796, ACI 523.3R standards)
             if (hasFoamAgent && density < 1900) {
-                let foamCategory = density < 600 ? 'Ultra-Light' : density < 1000 ? 'Light' : density < 1400 ? 'Medium' : 'Structural Light';
+                let foamCategory, structuralClass, thermalCond, estStrength, mainApplications;
+                
+                // Standard density classifications per ACI 523.3R and IS 2185
+                if (density < 600) {
+                    foamCategory = 'Non-structural';
+                    structuralClass = 'Insulation grade';
+                    thermalCond = '0.10-0.18';
+                    estStrength = (density * 0.0025).toFixed(1); // 0.25 MPa per 100 kg/m³
+                    mainApplications = 'Thermal insulation, acoustic barriers, roof insulation, under-floor heating';
+                } else if (density < 900) {
+                    foamCategory = 'Lightweight Fill';
+                    structuralClass = 'Non-load bearing';
+                    thermalCond = '0.18-0.30';
+                    estStrength = (density * 0.003).toFixed(1); // 0.30 MPa per 100 kg/m³
+                    mainApplications = 'Void filling, trench reinstatement, roof fill, tunnel linings, sub-base';
+                } else if (density < 1200) {
+                    foamCategory = 'Masonry Grade';
+                    structuralClass = 'Block production';
+                    thermalCond = '0.30-0.45';
+                    estStrength = (density * 0.0032).toFixed(1); // 0.32 MPa per 100 kg/m³
+                    mainApplications = 'Lightweight blocks, partition walls, cladding panels, fire-resistant walls';
+                } else if (density < 1600) {
+                    foamCategory = 'Structural Lightweight';
+                    structuralClass = 'Low-rise structures';
+                    thermalCond = '0.45-0.60';
+                    estStrength = (density * 0.0035).toFixed(1); // 0.35 MPa per 100 kg/m³
+                    mainApplications = 'Composite slabs, lightweight panels, low-rise construction, precast elements';
+                } else {
+                    foamCategory = 'Load-bearing';
+                    structuralClass = 'Structural grade';
+                    thermalCond = '0.60-0.75';
+                    estStrength = (density * 0.004).toFixed(1); // 0.40 MPa per 100 kg/m³
+                    mainApplications = 'Structural slabs, load-bearing walls, composite structures, engineered fills';
+                }
+                
                 type = `Foam Concrete (${foamCategory} - ${density} kg/m³)`;
                 className = 'foam';
-                description = 'Lightweight cellular concrete with excellent thermal insulation and void filling properties';
-                applications = 'Roof insulation, void filling, lightweight blocks, trench reinstatement, tunnel linings, sub-bases';
-                characteristics = `Density: ${density} kg/m³, Air content: 40-80%, Thermal conductivity: 0.1-0.7 W/mK, Compressive strength: 0.5-${Math.round(density/100)} MPa`;
+                description = `Cellular concrete per ASTM C796 & ACI 523.3R - ${structuralClass} with excellent thermal and acoustic properties`;
+                applications = mainApplications;
+                characteristics = `Density: ${density} kg/m³ | Est. Strength: ${estStrength} MPa (28-day) | Thermal: ${thermalCond} W/mK | Air voids: 40-80% | Standards: ASTM C796, ACI 523.3R, BS 8110, IS 2185-4`;
             }
             // Geopolymer Concrete
             else if (totalSCM >= 70 && !hasSilicaFume) {
@@ -2577,6 +2673,227 @@
 
             return { type, className, description, applications, characteristics };
         }
+
+        // ========== FOAM CONCRETE CALCULATION (ASTM C796, ACI 523.3R) ==========
+        function calculateFoamConcreteMix(targetStrength, targetDensity, scmComposition, totalSCMPercent, cementSG, fineSG, coarseSG, stdDev, exposure) {
+            console.log('🫧 FOAM CONCRETE MODE ACTIVATED - Using ASTM C796 / ACI 523.3R method');
+            
+            // Get foam parameters
+            const foamAgentDosage = parseFloat(document.getElementById('foamAgentDosage').value) / 100;
+            const foamExpansionRatio = parseFloat(document.getElementById('foamExpansionRatio').value);
+            const targetAirContent = parseFloat(document.getElementById('foamAirContent').value) / 100;
+            const foamType = document.getElementById('foamType').value;
+            
+            // STEP 1: Calculate BASE MIX (cement + sand + water) - No coarse aggregate for foam concrete
+            // Base mix W/C ratio for foam concrete is typically 0.40-0.55
+            const wcRatio = 0.45; // Standard for foam concrete per ACI 523.3R
+            
+            // STEP 2: Calculate solid volume needed
+            // Target density is achieved by replacing volume with air (foam)
+            // Solid fraction = (1 - air content)
+            const solidFraction = 1 - targetAirContent;
+            
+            // STEP 3: Base mix proportions (per m³ of BASE MIX, not final foam concrete)
+            // For foam concrete, typical cement content: 300-400 kg/m³ of base mix
+            let baseCementContent = 350; // kg/m³ of base mix
+            
+            // Adjust cement for very low density foam
+            if (targetDensity < 600) {
+                baseCementContent = 300;
+            } else if (targetDensity > 1400) {
+                baseCementContent = 400;
+            }
+            
+            // Water content from W/C ratio
+            const baseWaterContent = baseCementContent * wcRatio;
+            
+            // Fine aggregate (sand) for foam concrete - typically 1.5-2.5 times cement weight
+            // Lower densities use less sand
+            let sandCementRatio;
+            if (targetDensity < 800) {
+                sandCementRatio = 0; // No sand for ultra-light foam
+            } else if (targetDensity < 1200) {
+                sandCementRatio = 1.0;
+            } else {
+                sandCementRatio = 1.8;
+            }
+            
+            const baseSandContent = baseCementContent * sandCementRatio;
+            
+            // STEP 4: Calculate base mix density
+            const cementVolume = baseCementContent / (cementSG * 1000);
+            const waterVolume = baseWaterContent / 1000;
+            const sandVolume = baseSandContent / (fineSG * 1000);
+            
+            const baseMixDensity = baseCementContent + baseWaterContent + baseSandContent;
+            const baseMixVolume = cementVolume + waterVolume + sandVolume;
+            
+            // STEP 5: Calculate final quantities per m³ of FOAM CONCRETE
+            // Final quantities = Base mix × solid fraction
+            const finalCement = Math.round(baseCementContent * solidFraction);
+            const finalWater = Math.round(baseWaterContent * solidFraction);
+            const finalSand = Math.round(baseSandContent * solidFraction);
+            
+            // Calculate SCM if used
+            let finalOPC = finalCement;
+            let scmWeight = 0;
+            if (totalSCMPercent > 0) {
+                scmWeight = finalCement * (totalSCMPercent / 100);
+                finalOPC = finalCement - scmWeight;
+            }
+            
+            // STEP 6: Calculate foam volume and foam agent required
+            const solidVolume = solidFraction; // m³ per m³ of foam concrete
+            const foamVolume = targetAirContent; // m³ per m³ of foam concrete
+            
+            // Foam agent required (liters)
+            const foamAgentRequired = (foamVolume * 1000) / foamExpansionRatio;
+            const foamAgentKg = foamAgentRequired * 1.02; // Density ~1.02 kg/L for foam agents
+            
+            // STEP 7: Calculate actual achieved density
+            const calculatedDensity = finalCement + finalWater + finalSand + foamAgentKg;
+            
+            // STEP 8: Estimate compressive strength (Research-based formula)
+            // Strength correlates with density: approximately 0.25-0.40 MPa per 100 kg/m³
+            let strengthFactor;
+            if (targetDensity < 800) {
+                strengthFactor = 0.0025; // 0.25 MPa per 100 kg/m³
+            } else if (targetDensity < 1200) {
+                strengthFactor = 0.003; // 0.30 MPa per 100 kg/m³
+            } else if (targetDensity < 1600) {
+                strengthFactor = 0.0035; // 0.35 MPa per 100 kg/m³
+            } else {
+                strengthFactor = 0.004; // 0.40 MPa per 100 kg/m³
+            }
+            
+            const estimatedStrength = (targetDensity * strengthFactor).toFixed(1);
+            
+            // STEP 9: Calculate thermal conductivity (W/mK)
+            // Formula: k = 0.00015 × density + 0.01
+            const thermalConductivity = (0.00015 * targetDensity + 0.01).toFixed(3);
+            
+            // STEP 10: Determine concrete type info
+            const concreteTypeInfo = determineConcreteType({
+                strength: parseFloat(estimatedStrength),
+                wcRatio: wcRatio,
+                slump: 175,
+                hasSilicaFume: false,
+                hasVMA: false,
+                totalSCM: totalSCMPercent,
+                placement: 'normal',
+                useSP: false,
+                hasFoamAgent: true,
+                density: targetDensity,
+                hasFibers: false,
+                fineAggPercent: 1.0
+            });
+            
+            // Update UI with results
+            const typeBadge = document.getElementById('concreteTypeBadge');
+            typeBadge.textContent = concreteTypeInfo.type.toUpperCase();
+            typeBadge.className = `concrete-type-badge ${concreteTypeInfo.className}`;
+            
+            const typeDetails = document.getElementById('concreteTypeDetails');
+            const selectedPreset = document.getElementById('presetType').value;
+            let presetInfo = '';
+            if (selectedPreset === 'foam') {
+                presetInfo = `<p style="background: #e8f5e9; padding: 8px; border-radius: 6px; margin-bottom: 10px;"><strong>Selected Preset:</strong> 🫧 Foam Concrete</p>`;
+            }
+            
+            typeDetails.innerHTML = presetInfo + `
+                <p><strong>Detected Type:</strong> ${concreteTypeInfo.type}</p>
+                <p><strong>Description:</strong> ${concreteTypeInfo.description}</p>
+                <p><strong>Applications:</strong> ${concreteTypeInfo.applications}</p>
+                <p><strong>Characteristics:</strong> ${concreteTypeInfo.characteristics}</p>
+            `;
+            
+            // Display mix quantities
+            document.getElementById('cementResult').textContent = Math.round(finalOPC);
+            document.getElementById('totalCementResult').textContent = finalCement;
+            document.getElementById('waterResult').textContent = finalWater;
+            document.getElementById('fineResult').textContent = finalSand;
+            document.getElementById('coarseResult').textContent = 0; // No coarse aggregate in foam concrete
+            document.getElementById('wcRatio').textContent = wcRatio.toFixed(2);
+            document.getElementById('mixStrength').textContent = estimatedStrength;
+            
+            // Hide/show relevant cards
+            document.getElementById('scmResultItem').style.display = totalSCMPercent > 0 ? 'block' : 'none';
+            document.getElementById('scmResults').style.display = totalSCMPercent > 0 ? 'block' : 'none';
+            
+            if (totalSCMPercent > 0) {
+                let scmHTML = `<p><strong>Total SCM Replacement: ${totalSCMPercent}%</strong> (${Math.round(scmWeight)} kg/m³)</p>`;
+                scmComposition.forEach(scm => {
+                    const scmAmount = Math.round(finalCement * (scm.percent / 100));
+                    scmHTML += `<p><strong>${scm.name}:</strong> ${scm.percent}% = ${scmAmount} kg/m³<br>`;
+                    scmHTML += `<em>${scm.benefits}</em></p>`;
+                });
+                document.getElementById('scmDetails').innerHTML = scmHTML;
+            }
+            
+            // Display FOAM-SPECIFIC INFORMATION
+            const admixtureResults = document.getElementById('admixtureResults');
+            admixtureResults.style.display = 'block';
+            
+            let foamHTML = `
+                <div style="background: linear-gradient(135deg, #fff3e0, #ffe0b2); padding: 15px; border-radius: 12px; border: 2px solid #ffa726; margin-bottom: 15px;">
+                    <h3 style="color: #e65100; margin-bottom: 10px; font-size: 1.1rem;">🫧 FOAM CONCRETE METHODOLOGY (ASTM C796, ACI 523.3R)</h3>
+                    
+                    <div style="background: white; padding: 12px; border-radius: 8px; margin-bottom: 10px;">
+                        <p style="margin: 5px 0; font-size: 0.9rem;"><strong>📋 Standards Used:</strong></p>
+                        <p style="margin: 5px 0; font-size: 0.85rem;">
+                            • ASTM C796 - Standard Test Method for Foaming Agents<br>
+                            • ACI 523.3R - Guide for Cellular Concretes Above 800 kg/m³<br>
+                            • BS 8110 - Structural Use of Concrete<br>
+                            • IS 2185 (Part 4) - Concrete Masonry Units
+                        </p>
+                    </div>
+                    
+                    <div style="background: white; padding: 12px; border-radius: 8px; margin-bottom: 10px;">
+                        <p style="margin: 5px 0;"><strong>🔬 Calculation Method:</strong></p>
+                        <p style="margin: 5px 0; font-size: 0.85rem; line-height: 1.6;">
+                            1. Base Mix Design: Cement (${baseCementContent} kg/m³) + Water (${Math.round(baseWaterContent)} kg/m³) + Sand (${Math.round(baseSandContent)} kg/m³)<br>
+                            2. W/C Ratio: ${wcRatio} (Standard for foam concrete)<br>
+                            3. Target Air Content: ${(targetAirContent * 100).toFixed(0)}% (Void volume)<br>
+                            4. Solid Fraction: ${(solidFraction * 100).toFixed(0)}% (Material volume)<br>
+                            5. Final quantities = Base mix × Solid fraction
+                        </p>
+                    </div>
+                    
+                    <div style="background: white; padding: 12px; border-radius: 8px;">
+                        <p style="margin: 5px 0;"><strong>🫧 Foam Agent Details:</strong></p>
+                        <p style="margin: 5px 0; font-size: 0.85rem;">
+                            • Type: ${foamType === 'protein' ? 'Protein-based (Natural)' : 'Synthetic (Chemical)'}<br>
+                            • Dosage: ${(foamAgentDosage * 100).toFixed(1)}% of total mix<br>
+                            • Expansion Ratio: ${foamExpansionRatio}:1<br>
+                            • Foam Volume Required: ${(foamVolume * 1000).toFixed(0)} liters/m³<br>
+                            • Foam Agent Required: ${foamAgentRequired.toFixed(2)} liters/m³ (${foamAgentKg.toFixed(2)} kg/m³)
+                        </p>
+                    </div>
+                </div>
+                
+                <div style="background: #e3f2fd; padding: 12px; border-radius: 10px; border-left: 4px solid #2196f3;">
+                    <p style="margin: 5px 0;"><strong>📊 Performance Estimates:</strong></p>
+                    <p style="margin: 5px 0; font-size: 0.85rem;">
+                        • Target Density: ${targetDensity} kg/m³<br>
+                        • Calculated Density: ${calculatedDensity.toFixed(0)} kg/m³<br>
+                        • Est. 28-day Strength: ${estimatedStrength} MPa (${strengthFactor} MPa per 100 kg/m³)<br>
+                        • Thermal Conductivity: ${thermalConductivity} W/mK<br>
+                        • Air Content: ${(targetAirContent * 100).toFixed(0)}%<br>
+                        • Sand-to-Cement Ratio: ${sandCementRatio.toFixed(1)}:1
+                    </p>
+                </div>
+            `;
+            
+            document.getElementById('admixtureDetails').innerHTML = foamHTML;
+            
+            // Calculate cost
+            calculateCost(finalOPC, scmWeight, finalSand, 0, foamAgentKg);
+            
+            console.log('✅ Foam concrete calculation complete');
+            console.log(`Target: ${targetDensity} kg/m³ | Calculated: ${calculatedDensity.toFixed(0)} kg/m³`);
+            console.log(`Est. Strength: ${estimatedStrength} MPa | Thermal: ${thermalConductivity} W/mK`);
+        }
+        // ========== END FOAM CONCRETE CALCULATION ==========
 
         function calculateMix(shouldScroll = false) {
             const grade = document.getElementById('concreteGrade').value;
@@ -2688,6 +3005,13 @@
             const useVMA = document.getElementById('useViscosity').checked;
             const useFoamAgent = document.getElementById('useFoamAgent').checked;
             const foamDensity = useFoamAgent ? parseFloat(document.getElementById('foamDensity').value) : 2400;
+
+            // ========== FOAM CONCRETE CALCULATION METHOD (Per ASTM C796, ACI 523.3R) ==========
+            if (useFoamAgent && foamDensity < 1900) {
+                calculateFoamConcreteMix(targetStrength, foamDensity, scmComposition, totalSCMPercent, cementSG, fineSG, coarseSG, stdDev, exposure);
+                return; // Exit regular calculation - foam uses different method
+            }
+            // ========== END FOAM CONCRETE METHOD ==========
 
             const mixStrength = (targetStrength + 1.65 * stdDev) / strengthEfficiencyFactor;
 
