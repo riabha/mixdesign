@@ -1062,10 +1062,18 @@
         .logo-circle {
             background: white;
             border-radius: 50%;
-            padding: 20px;
-            display: inline-block;
+            width: 140px;
+            height: 140px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             margin-bottom: 20px;
+        }
+        
+        .logo-circle img {
+            max-height: 100px;
+            max-width: 100px;
         }
         
         .report-section {
@@ -1209,8 +1217,8 @@
     <div class="container">
         <header>
             <div style="display: flex; align-items: center; justify-content: center; gap: 20px; margin-bottom: 15px;">
-                <div style="background: white; border-radius: 50%; padding: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
-                    <img src="mono.png" alt="Logo" style="height: 80px; display: block;">
+                <div style="background: white; border-radius: 50%; width: 110px; height: 110px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                    <img src="mono.png" alt="Logo" style="max-height: 80px; max-width: 80px; display: block;">
                 </div>
                 <div>
                     <h1 style="margin: 0;">🏗️ Advanced Concrete Mix Design Dashboard</h1>
@@ -4286,7 +4294,7 @@
                 <div class="print-report-content">
                     <div class="report-header">
                         <div class="logo-circle">
-                            <img src="mono.png" alt="Logo" style="height: 100px; display: block;">
+                            <img src="mono.png" alt="Logo">
                         </div>
                         <h1 style="color: #6366f1; margin: 10px 0;">Concrete Mix Design Report</h1>
                         <p style="font-size: 1.1rem; color: #666;">Quaid-e-Awam University of Engineering, Science & Technology</p>
