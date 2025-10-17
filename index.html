@@ -1828,6 +1828,7 @@
         // [JAVASCRIPT CODE - Same as before, starting from preset loading functions]
         // Preset loading functions
         function loadPreset(type) {
+            // Clear ALL checkboxes first (ensures clean slate)
             document.getElementById('useFlyAsh').checked = false;
             document.getElementById('useGGBS').checked = false;
             document.getElementById('useSilicaFume').checked = false;
@@ -1840,10 +1841,17 @@
             document.getElementById('useViscosity').checked = false;
             document.getElementById('useFoamAgent').checked = false;
             document.getElementById('useFibers').checked = false;
+            document.getElementById('useWaterproofing').checked = false;
+            document.getElementById('useWhiteCement').checked = false;
+            document.getElementById('usePigment').checked = false;
+            document.getElementById('useExposedAggregate').checked = false;
 
+            // Hide ALL options divs
             ['flyAshOptions', 'ggbsOptions', 'silicaFumeOptions', 'metakaolinOptions', 'rhaOptions',
-             'superplasticizerOptions', 'airEntrainingOptions', 'foamAgentOptions', 'fibersOptions'].forEach(id => {
-                document.getElementById(id).style.display = 'none';
+             'superplasticizerOptions', 'airEntrainingOptions', 'retarderOptions', 'acceleratorOptions',
+             'waterproofingOptions', 'viscosityOptions', 'foamAgentOptions', 'fibersOptions', 'pigmentOptions'].forEach(id => {
+                const element = document.getElementById(id);
+                if (element) element.style.display = 'none';
             });
 
             switch(type) {
@@ -3253,6 +3261,29 @@
         }
 
         window.addEventListener('load', function() {
+            // Clear all checkboxes on page load (prevent browser auto-fill)
+            document.getElementById('useFlyAsh').checked = false;
+            document.getElementById('useGGBS').checked = false;
+            document.getElementById('useSilicaFume').checked = false;
+            document.getElementById('useMetakaolin').checked = false;
+            document.getElementById('useRHA').checked = false;
+            document.getElementById('useSuperplasticizer').checked = false;
+            document.getElementById('useAirEntraining').checked = false;
+            document.getElementById('useRetarder').checked = false;
+            document.getElementById('useAccelerator').checked = false;
+            document.getElementById('useViscosity').checked = false;
+            document.getElementById('useFoamAgent').checked = false;
+            document.getElementById('useFibers').checked = false;
+            document.getElementById('useWaterproofing').checked = false;
+            
+            // Hide all options divs on page load
+            ['flyAshOptions', 'ggbsOptions', 'silicaFumeOptions', 'metakaolinOptions', 'rhaOptions',
+             'superplasticizerOptions', 'airEntrainingOptions', 'retarderOptions', 'acceleratorOptions',
+             'waterproofingOptions', 'viscosityOptions', 'foamAgentOptions', 'fibersOptions'].forEach(id => {
+                const element = document.getElementById(id);
+                if (element) element.style.display = 'none';
+            });
+            
             // Initialize all slider values on page load
             updateSliderValue('flyAsh');
             updateSliderValue('ggbs');
