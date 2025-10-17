@@ -197,6 +197,18 @@
             background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
             color: #2c3e50;
         }
+        
+        .preset-btn:nth-child(8):hover {
+            background: linear-gradient(135deg, #f857a6 0%, #ff5858 100%);
+        }
+        
+        .preset-btn:nth-child(9):hover {
+            background: linear-gradient(135deg, #00d2ff 0%, #3a47d5 100%);
+        }
+        
+        .preset-btn:nth-child(10):hover {
+            background: linear-gradient(135deg, #06d6a0 0%, #1b9aaa 100%);
+        }
 
         .preset-btn:active {
             transform: translateY(-1px) scale(1.02);
@@ -521,6 +533,26 @@
             background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
             color: #2c3e50;
             box-shadow: 0 8px 25px rgba(255, 236, 210, 0.5);
+        }
+
+        .concrete-type-badge.fiber {
+            background: linear-gradient(135deg, #f857a6 0%, #ff5858 100%);
+            box-shadow: 0 8px 25px rgba(248, 87, 166, 0.5);
+        }
+
+        .concrete-type-badge.geopolymer {
+            background: linear-gradient(135deg, #00d2ff 0%, #3a47d5 100%);
+            box-shadow: 0 8px 25px rgba(0, 210, 255, 0.5);
+        }
+
+        .concrete-type-badge.pervious {
+            background: linear-gradient(135deg, #06d6a0 0%, #1b9aaa 100%);
+            box-shadow: 0 8px 25px rgba(6, 214, 160, 0.5);
+        }
+
+        .concrete-type-badge.green {
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+            box-shadow: 0 8px 25px rgba(86, 171, 47, 0.5);
         }
 
         .results-grid {
@@ -949,13 +981,16 @@
 
         <!-- Quick Presets -->
         <div class="preset-buttons">
-            <button class="preset-btn" onclick="loadPreset('normal')">🏢 Normal Concrete</button>
+            <button class="preset-btn" onclick="loadPreset('normal')">🏢 Normal</button>
             <button class="preset-btn" onclick="loadPreset('hpc')">⚡ High-Performance</button>
-            <button class="preset-btn" onclick="loadPreset('uhpc')">💎 Ultra-High Performance</button>
+            <button class="preset-btn" onclick="loadPreset('uhpc')">💎 Ultra-High</button>
             <button class="preset-btn" onclick="loadPreset('scc')">🌊 Self-Compacting</button>
-            <button class="preset-btn" onclick="loadPreset('mass')">🏔️ Mass Concrete</button>
-            <button class="preset-btn" onclick="loadPreset('marine')">🌊 Marine Grade</button>
-            <button class="preset-btn" onclick="loadPreset('foam')">🫧 Foam Concrete</button>
+            <button class="preset-btn" onclick="loadPreset('mass')">🏔️ Mass</button>
+            <button class="preset-btn" onclick="loadPreset('marine')">🌊 Marine</button>
+            <button class="preset-btn" onclick="loadPreset('foam')">🫧 Foam</button>
+            <button class="preset-btn" onclick="loadPreset('fiber')">🧵 Fiber Reinforced</button>
+            <button class="preset-btn" onclick="loadPreset('geopolymer')">♻️ Geopolymer</button>
+            <button class="preset-btn" onclick="loadPreset('pervious')">💧 Pervious</button>
         </div>
 
         <div class="dashboard">
@@ -1344,21 +1379,61 @@
                     <label for="useFoamAgent">Foaming Agent (For Foam Concrete)</label>
                 </div>
 
-                <div id="foamAgentOptions" style="display: none; background: #f8f9fa; padding: 15px; border-radius: 10px; margin-top: 10px; border: 2px solid #ffa726;">
+                <div id="foamAgentOptions" style="display: none; background: #fff3e0; padding: 15px; border-radius: 10px; margin-top: 10px; border: 2px solid #ffa726;">
+                    <div class="info-box" style="margin: 0 0 15px 0;">
+                        <p style="margin: 0; font-size: 0.85rem;"><strong>Foam Concrete Standards:</strong><br>
+                        • Ultra-Light: 400-600 kg/m³ (Insulation)<br>
+                        • Light: 600-1000 kg/m³ (Blocks, Roof fill)<br>
+                        • Medium: 1000-1400 kg/m³ (Partition walls)<br>
+                        • Structural Light: 1400-1800 kg/m³ (Low-rise construction)</p>
+                    </div>
                     <div class="form-group">
                         <label>Target Density (kg/m³) <span class="label-info">Range: 400-1800 kg/m³</span></label>
                         <div style="margin: 15px 0;">
-                            <input type="range" id="foamDensity" value="1000" step="100" min="400" max="1800" oninput="updateSliderValue('foamDensity'); calculateMix(false)" style="width: 100%;">
+                            <input type="range" id="foamDensity" value="1000" step="50" min="400" max="1800" oninput="updateSliderValue('foamDensity'); calculateMix(false)" style="width: 100%;">
                         </div>
                         <span class="slider-value" id="foamDensityValue" style="background: linear-gradient(135deg, #ffa726, #fb8c00);">1000 kg/m³</span>
-                        <span class="label-benefit">✓ Lightweight, thermal insulation, void filling</span>
+                        <span class="label-benefit" id="foamDensityCategory">✓ Light - Blocks, Roof fill</span>
                     </div>
                     <div class="form-group">
-                        <label>Foam Agent Dosage (%) <span class="label-info">Typical: 2-5%</span></label>
+                        <label>Foam Agent Dosage (%) <span class="label-info">Protein or Synthetic based</span></label>
                         <div style="margin: 15px 0;">
                             <input type="range" id="foamAgentDosage" value="3" step="0.5" min="1" max="8" oninput="updateSliderValue('foamAgent'); calculateMix(false)" style="width: 100%;">
                         </div>
                         <span class="slider-value" id="foamAgentValue" style="background: linear-gradient(135deg, #ffa726, #fb8c00);">3%</span>
+                    </div>
+                    <div class="form-group">
+                        <label>Foam Type</label>
+                        <select id="foamType" onchange="calculateMix(false)">
+                            <option value="protein">Protein-based (Natural)</option>
+                            <option value="synthetic" selected>Synthetic (Chemical)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="useFibers" onchange="toggleAdmixture('fibers')">
+                    <label for="useFibers">Fibers (Steel/Polypropylene/Glass)</label>
+                </div>
+
+                <div id="fibersOptions" style="display: none; background: #f8f9fa; padding: 15px; border-radius: 10px; margin-top: 10px; border: 2px solid #f857a6;">
+                    <div class="form-group">
+                        <label>Fiber Type</label>
+                        <select id="fiberType" onchange="calculateMix(false)">
+                            <option value="steel">Steel Fibers</option>
+                            <option value="polypropylene">Polypropylene (PP) Fibers</option>
+                            <option value="glass">Glass Fibers (GFRC)</option>
+                            <option value="carbon">Carbon Fibers</option>
+                            <option value="basalt">Basalt Fibers</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Fiber Dosage (kg/m³) <span class="label-info">Steel: 20-80 kg/m³, PP: 0.5-2 kg/m³</span></label>
+                        <div style="margin: 15px 0;">
+                            <input type="range" id="fiberDosage" value="30" step="5" min="5" max="100" oninput="updateSliderValue('fiber'); calculateMix(false)" style="width: 100%;">
+                        </div>
+                        <span class="slider-value" id="fiberValue" style="background: linear-gradient(135deg, #f857a6, #ff5858);">30 kg/m³</span>
+                        <span class="label-benefit">✓ Crack control, impact resistance, ductility</span>
                     </div>
                 </div>
             </div>
@@ -1535,9 +1610,10 @@
             document.getElementById('useAccelerator').checked = false;
             document.getElementById('useViscosity').checked = false;
             document.getElementById('useFoamAgent').checked = false;
+            document.getElementById('useFibers').checked = false;
 
             ['flyAshOptions', 'ggbsOptions', 'silicaFumeOptions', 'metakaolinOptions', 'rhaOptions',
-             'superplasticizerOptions', 'airEntrainingOptions', 'foamAgentOptions'].forEach(id => {
+             'superplasticizerOptions', 'airEntrainingOptions', 'foamAgentOptions', 'fibersOptions'].forEach(id => {
                 document.getElementById(id).style.display = 'none';
             });
 
@@ -1628,7 +1704,7 @@
                     break;
 
                 case 'foam':
-                    document.getElementById('concreteGrade').value = '15';
+                    document.getElementById('concreteGrade').value = '10';
                     document.getElementById('exposure').value = 'mild';
                     document.getElementById('slump').value = '175';
                     document.getElementById('useFlyAsh').checked = true;
@@ -1638,8 +1714,47 @@
                     document.getElementById('flyAshPercent').value = '20';
                     document.getElementById('foamDensity').value = '1000';
                     document.getElementById('foamAgentDosage').value = '3';
-                    document.getElementById('fineAggPercent').value = '0';
+                    document.getElementById('fineAggPercent').value = '100';
                     document.getElementById('maxAggSize').value = '10';
+                    break;
+
+                case 'fiber':
+                    document.getElementById('concreteGrade').value = '40';
+                    document.getElementById('exposure').value = 'severe';
+                    document.getElementById('slump').value = '125';
+                    document.getElementById('useFibers').checked = true;
+                    document.getElementById('useSuperplasticizer').checked = true;
+                    toggleAdmixture('fibers');
+                    toggleSuperplasticizer();
+                    document.getElementById('fiberType').value = 'steel';
+                    document.getElementById('fiberDosage').value = '40';
+                    document.getElementById('superplasticizerDosage').value = '1.0';
+                    break;
+
+                case 'geopolymer':
+                    document.getElementById('concreteGrade').value = '35';
+                    document.getElementById('exposure').value = 'severe';
+                    document.getElementById('slump').value = '125';
+                    document.getElementById('useFlyAsh').checked = true;
+                    document.getElementById('useGGBS').checked = true;
+                    document.getElementById('useSuperplasticizer').checked = true;
+                    toggleSCM('flyAsh');
+                    toggleSCM('ggbs');
+                    toggleSuperplasticizer();
+                    document.getElementById('flyAshPercent').value = '40';
+                    document.getElementById('ggbsPercent').value = '35';
+                    document.getElementById('superplasticizerDosage').value = '1.5';
+                    break;
+
+                case 'pervious':
+                    document.getElementById('concreteGrade').value = '20';
+                    document.getElementById('exposure').value = 'severe';
+                    document.getElementById('slump').value = '75';
+                    document.getElementById('useSuperplasticizer').checked = true;
+                    toggleSuperplasticizer();
+                    document.getElementById('superplasticizerDosage').value = '0.8';
+                    document.getElementById('fineAggPercent').value = '10';
+                    document.getElementById('maxAggSize').value = '20';
                     break;
             }
 
@@ -1721,10 +1836,35 @@
             let slider = document.getElementById(`${type}Percent`);
             let valueDisplay = document.getElementById(`${type}Value`);
             
-            // Handle foam density (special case - not percentage)
+            // Handle foam density (special case - kg/m³)
             if (type === 'foamDensity') {
                 slider = document.getElementById('foamDensity');
                 valueDisplay = document.getElementById('foamDensityValue');
+                const categoryLabel = document.getElementById('foamDensityCategory');
+                if (slider && valueDisplay) {
+                    const density = parseFloat(slider.value);
+                    valueDisplay.textContent = density + ' kg/m³';
+                    
+                    // Update category based on density
+                    if (categoryLabel) {
+                        if (density < 600) {
+                            categoryLabel.textContent = '✓ Ultra-Light - Insulation';
+                        } else if (density < 1000) {
+                            categoryLabel.textContent = '✓ Light - Blocks, Roof fill';
+                        } else if (density < 1400) {
+                            categoryLabel.textContent = '✓ Medium - Partition walls';
+                        } else {
+                            categoryLabel.textContent = '✓ Structural Light - Low-rise construction';
+                        }
+                    }
+                }
+                return;
+            }
+            
+            // Handle fiber dosage (special case - kg/m³)
+            if (type === 'fiber') {
+                slider = document.getElementById('fiberDosage');
+                valueDisplay = document.getElementById('fiberValue');
                 if (slider && valueDisplay) {
                     valueDisplay.textContent = slider.value + ' kg/m³';
                 }
@@ -1814,7 +1954,7 @@
         }
 
         function determineConcreteType(params) {
-            const { strength, wcRatio, slump, hasSilicaFume, hasVMA, totalSCM, placement, useSP, hasFoamAgent, density } = params;
+            const { strength, wcRatio, slump, hasSilicaFume, hasVMA, totalSCM, placement, useSP, hasFoamAgent, density, hasFibers, fineAggPercent } = params;
 
             let type = 'normal';
             let className = 'normal';
@@ -1824,11 +1964,36 @@
 
             // Foam Concrete - check first
             if (hasFoamAgent && density < 1900) {
-                type = 'Foam Concrete (Cellular Concrete)';
+                let foamCategory = density < 600 ? 'Ultra-Light' : density < 1000 ? 'Light' : density < 1400 ? 'Medium' : 'Structural Light';
+                type = `Foam Concrete (${foamCategory} - ${density} kg/m³)`;
                 className = 'foam';
-                description = 'Lightweight, excellent thermal insulation, void filling properties';
-                applications = 'Roof insulation, void filling, lightweight blocks, trench reinstatement, tunnel linings';
-                characteristics = `Density: ${density} kg/m³, Lightweight, High air content (40-80%), Low strength but excellent insulation`;
+                description = 'Lightweight cellular concrete with excellent thermal insulation and void filling properties';
+                applications = 'Roof insulation, void filling, lightweight blocks, trench reinstatement, tunnel linings, sub-bases';
+                characteristics = `Density: ${density} kg/m³, Air content: 40-80%, Thermal conductivity: 0.1-0.7 W/mK, Compressive strength: 0.5-${Math.round(density/100)} MPa`;
+            }
+            // Geopolymer Concrete
+            else if (totalSCM >= 70 && !hasSilicaFume) {
+                type = 'Geopolymer Concrete';
+                className = 'geopolymer';
+                description = 'Zero-cement concrete, excellent chemical resistance, sustainable alternative';
+                applications = 'Sustainable construction, acid-resistant structures, high-temperature applications, green building';
+                characteristics = `Total SCM: ${totalSCM}%, Alkaline activated, Low CO₂ emissions, Excellent acid resistance`;
+            }
+            // Fiber Reinforced Concrete
+            else if (hasFibers) {
+                type = 'Fiber Reinforced Concrete (FRC)';
+                className = 'fiber';
+                description = 'Enhanced crack control, impact resistance, and improved ductility';
+                applications = 'Industrial floors, pavements, tunnel linings, shotcrete, earthquake-resistant structures';
+                characteristics = `Compressive strength: ${strength} MPa, Improved toughness, Reduced crack width, Enhanced durability`;
+            }
+            // Pervious Concrete
+            else if (fineAggPercent < 15 && slump < 100) {
+                type = 'Pervious Concrete (Permeable)';
+                className = 'pervious';
+                description = 'High porosity for water drainage, stormwater management, eco-friendly';
+                applications = 'Parking lots, sidewalks, driveways, stormwater management, permeable pavements';
+                characteristics = `Void content: 15-30%, Infiltration rate: 2-6 mm/sec, Low fine aggregate content, Open-graded`;
             }
             else if (strength >= 60 && wcRatio <= 0.35 && hasSilicaFume && useSP) {
                 type = 'Ultra-High Performance Concrete (UHPC)';
@@ -2038,6 +2203,8 @@
             const fineAggWeight = Math.round(fineAggVolume * fineSG * 1000);
             const coarseAggWeight = Math.round(coarseAggVolume * coarseSG * 1000);
 
+            const useFibers = document.getElementById('useFibers').checked;
+
             const concreteTypeInfo = determineConcreteType({
                 strength: targetStrength,
                 wcRatio: actualWC,
@@ -2048,7 +2215,9 @@
                 placement: placement,
                 useSP: useSuperplasticizer,
                 hasFoamAgent: useFoamAgent,
-                density: foamDensity
+                density: foamDensity,
+                hasFibers: useFibers,
+                fineAggPercent: fineAggPercent * 100
             });
 
             const typeBadge = document.getElementById('concreteTypeBadge');
@@ -2180,9 +2349,24 @@
             if (useFoamAgent) {
                 const foamAgentDosage = parseFloat(document.getElementById('foamAgentDosage').value);
                 const targetDensity = parseFloat(document.getElementById('foamDensity').value);
+                const foamType = document.getElementById('foamType').value;
                 const foamAgentAmount = Math.round(finalTotalCementitious * volume * foamAgentDosage / 100 * 100) / 100;
-                admixtureList.push(`<p><strong>Foaming Agent:</strong> ${foamAgentDosage}% by cementitious weight = ${foamAgentAmount} kg (for ${volume} m³)<br>
-                                   <em>Target Density: ${targetDensity} kg/m³ | Effect: Lightweight concrete (40-80% air content), excellent thermal insulation, reduced dead load</em></p>`);
+                const foamTypeName = foamType === 'protein' ? 'Protein-based' : 'Synthetic';
+                admixtureList.push(`<p><strong>Foaming Agent (${foamTypeName}):</strong> ${foamAgentDosage}% by cementitious weight = ${foamAgentAmount} kg (for ${volume} m³)<br>
+                                   <em>Target Density: ${targetDensity} kg/m³ | Air content: ~${Math.round((1 - targetDensity/2400) * 100)}% | Thermal conductivity: ${(0.1 + targetDensity/3000).toFixed(2)} W/mK</em></p>`);
+            }
+
+            if (useFibers) {
+                const fiberType = document.getElementById('fiberType').value;
+                const fiberDosage = parseFloat(document.getElementById('fiberDosage').value);
+                const totalFibers = Math.round(fiberDosage * volume * 10) / 10;
+                const fiberTypeName = fiberType === 'steel' ? 'Steel Fibers' :
+                                     fiberType === 'polypropylene' ? 'Polypropylene Fibers' :
+                                     fiberType === 'glass' ? 'Glass Fibers (GFRC)' :
+                                     fiberType === 'carbon' ? 'Carbon Fibers' :
+                                     'Basalt Fibers';
+                admixtureList.push(`<p><strong>${fiberTypeName}:</strong> ${fiberDosage} kg/m³ = ${totalFibers} kg (for ${volume} m³)<br>
+                                   <em>Effect: Enhanced crack control, improved toughness, impact resistance, reduced shrinkage cracking</em></p>`);
             }
 
             if (admixtureList.length > 0) {
@@ -2253,6 +2437,7 @@
             updateSliderValue('viscosity');
             updateSliderValue('foamDensity');
             updateSliderValue('foamAgent');
+            updateSliderValue('fiber');
             
             updateFromGrade();
             calculateMix(false);
