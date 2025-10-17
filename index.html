@@ -1,0 +1,2201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Concrete Mix Design Dashboard - QUEST</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', 'Oxygen', 'Ubuntu', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            padding: 15px;
+            position: relative;
+        }
+
+        .container {
+            max-width: 1900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 20px;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 8px;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        header p {
+            font-size: 1.15rem;
+            opacity: 0.95;
+            margin-bottom: 15px;
+            font-weight: 400;
+        }
+
+        .institution-info {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 0 auto 25px;
+            max-width: 900px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .institution-info h3 {
+            font-size: 1.4rem;
+            margin-bottom: 12px;
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .developers {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+
+        .developer {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 25px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .developer:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .developer-icon {
+            font-size: 1.2rem;
+        }
+
+        .institution-details {
+            font-size: 1rem;
+            opacity: 0.95;
+            margin-top: 10px;
+        }
+
+        .preset-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 25px;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        .preset-btn {
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.95);
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            color: #667eea;
+            border: 2px solid white;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 0.95rem;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .preset-btn:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            border-color: transparent;
+        }
+
+        .preset-btn:active {
+            transform: translateY(-1px) scale(1.02);
+        }
+        
+        .preset-btn:nth-child(1):hover {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+        
+        .preset-btn:nth-child(2):hover {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+        
+        .preset-btn:nth-child(3):hover {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        
+        .preset-btn:nth-child(4):hover {
+            background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);
+        }
+        
+        .preset-btn:nth-child(5):hover {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            color: #2c3e50;
+        }
+        
+        .preset-btn:nth-child(6):hover {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .preset-btn:active {
+            transform: translateY(-1px) scale(1.02);
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 28px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: fadeInUp 0.6s ease-out both;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.25);
+        }
+
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 22px;
+            font-size: 1.6rem;
+            border-bottom: 3px solid;
+            border-image: linear-gradient(90deg, #667eea, #764ba2) 1;
+            padding-bottom: 12px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card.scm-card h2 {
+            background: linear-gradient(90deg, #ff6b6b, #ee5a6f);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            border-image: linear-gradient(90deg, #ff6b6b, #ee5a6f) 1;
+        }
+
+        .card.aggregate-card h2 {
+            background: linear-gradient(90deg, #06d6a0, #1b9aaa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            border-image: linear-gradient(90deg, #06d6a0, #1b9aaa) 1;
+        }
+
+        .card.preset-card h2 {
+            background: linear-gradient(90deg, #f72585, #b5179e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            border-image: linear-gradient(90deg, #f72585, #b5179e) 1;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .label-info {
+            font-weight: normal;
+            font-size: 0.85rem;
+            color: #7f8c8d;
+            font-style: italic;
+        }
+
+        .label-benefit {
+            display: block;
+            font-weight: normal;
+            font-size: 0.8rem;
+            color: #27ae60;
+            margin-top: 5px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e6ed;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            background: #f8f9fa;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        input:disabled {
+            background-color: #ecf0f1;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .radio-group input[type="radio"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #667eea;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+            accent-color: #667eea;
+        }
+
+        .checkbox-group label {
+            margin-bottom: 0;
+            cursor: pointer;
+        }
+
+        .slider-container {
+            margin-top: 10px;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100% !important;
+            height: 10px;
+            border-radius: 8px;
+            background: linear-gradient(to right, #667eea, #764ba2);
+            outline: none;
+            cursor: pointer;
+            margin: 10px 0;
+            padding: 0 !important;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: white;
+            cursor: grab;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.4);
+            border: 4px solid #667eea;
+            transition: all 0.2s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+        }
+
+        input[type="range"]::-webkit-slider-thumb:active {
+            cursor: grabbing;
+            transform: scale(1.1);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: white;
+            cursor: grab;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.4);
+            border: 4px solid #667eea;
+            transition: all 0.2s;
+        }
+
+        input[type="range"]::-moz-range-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+        }
+
+        input[type="range"]::-moz-range-thumb:active {
+            cursor: grabbing;
+            transform: scale(1.1);
+        }
+
+        /* Range track for Firefox */
+        input[type="range"]::-moz-range-track {
+            height: 10px;
+            border-radius: 8px;
+            background: linear-gradient(to right, #667eea, #764ba2);
+        }
+
+        .slider-value {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            margin-left: 12px;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+
+        .scm-value {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+            box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
+        }
+
+        .agg-value {
+            background: linear-gradient(135deg, #06d6a0, #1b9aaa);
+            box-shadow: 0 2px 8px rgba(6, 214, 160, 0.3);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.15rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-top: 15px;
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.5);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        .results-card {
+            grid-column: 1 / -1;
+        }
+
+        .concrete-type-badge {
+            display: inline-block;
+            padding: 15px 35px;
+            border-radius: 30px;
+            font-size: 1.4rem;
+            font-weight: 800;
+            margin: 20px 0;
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            animation: pulse 2s ease-in-out infinite;
+            letter-spacing: 1px;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+        }
+
+        .concrete-type-badge.hpc {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            box-shadow: 0 8px 25px rgba(250, 112, 154, 0.5);
+        }
+
+        .concrete-type-badge.uhpc {
+            background: linear-gradient(135deg, #f72585 0%, #b5179e 100%);
+            box-shadow: 0 8px 25px rgba(247, 37, 133, 0.5);
+        }
+
+        .concrete-type-badge.scc {
+            background: linear-gradient(135deg, #06d6a0 0%, #1b9aaa 100%);
+            box-shadow: 0 8px 25px rgba(6, 214, 160, 0.5);
+        }
+
+        .concrete-type-badge.mass {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            box-shadow: 0 8px 25px rgba(79, 172, 254, 0.5);
+        }
+
+        .concrete-type-badge.normal {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 18px;
+            margin-top: 25px;
+        }
+
+        .result-item {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .result-item:hover {
+            transform: translateY(-5px);
+            border-color: #667eea;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.2);
+        }
+
+        .result-item.highlight {
+            background: linear-gradient(135deg, #ffd89b 0%, #19547b 100%);
+            color: white;
+        }
+        
+        .result-item.highlight .result-label,
+        .result-item.highlight .result-unit {
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .result-item.highlight .result-value {
+            color: white;
+        }
+
+        .result-item.scm-highlight {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            color: white;
+        }
+        
+        .result-item.scm-highlight .result-label,
+        .result-item.scm-highlight .result-unit {
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .result-item.scm-highlight .result-value {
+            color: white;
+        }
+
+        .result-label {
+            font-size: 0.95rem;
+            color: #666;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .result-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #667eea;
+        }
+
+        .result-unit {
+            font-size: 0.9rem;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #fff9e6 0%, #ffe9a6 100%);
+            border-left: 5px solid #ffc107;
+            padding: 20px;
+            margin-top: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(255, 193, 7, 0.2);
+        }
+
+        .info-box h3 {
+            color: #856404;
+            margin-bottom: 12px;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .info-box p {
+            color: #856404;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .admixture-box {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-left: 5px solid #2196f3;
+            padding: 20px;
+            margin-top: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(33, 150, 243, 0.2);
+        }
+
+        .admixture-box h3 {
+            color: #1565c0;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .admixture-box p {
+            color: #1565c0;
+            font-size: 0.95rem;
+            line-height: 1.7;
+            margin-bottom: 10px;
+        }
+
+        .scm-box {
+            background: linear-gradient(135deg, #ffe5e5 0%, #ffc4c4 100%);
+            border-left: 5px solid #ff6b6b;
+            padding: 20px;
+            margin-top: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.2);
+        }
+
+        .scm-box h3 {
+            color: #c92a2a;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .scm-box p {
+            color: #c92a2a;
+            font-size: 0.95rem;
+            line-height: 1.7;
+            margin-bottom: 10px;
+        }
+
+        .concrete-type-box {
+            background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+            border-left: 5px solid #9c27b0;
+            padding: 20px;
+            margin-top: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(156, 39, 176, 0.2);
+        }
+
+        .concrete-type-box h3 {
+            color: #6a1b9a;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .concrete-type-box p {
+            color: #6a1b9a;
+            font-size: 0.95rem;
+            line-height: 1.7;
+            margin-bottom: 10px;
+        }
+
+        .mix-proportions {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            border-left: 5px solid #4caf50;
+            padding: 25px;
+            margin-top: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.2);
+        }
+
+        .mix-proportions h3 {
+            color: #2e7d32;
+            margin-bottom: 18px;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .proportion-text {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #1b5e20;
+            text-align: center;
+        }
+
+        .benefit-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #06d6a0, #1b9aaa);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-top: 8px;
+            box-shadow: 0 2px 8px rgba(6, 214, 160, 0.3);
+            font-weight: 600;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+            border-left: 5px solid #f44336;
+            padding: 15px;
+            margin-top: 12px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            color: #c62828;
+            box-shadow: 0 2px 10px rgba(244, 67, 54, 0.2);
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 56px;
+            height: 28px;
+            margin-left: 12px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.4s;
+            border-radius: 28px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        input:checked + .toggle-slider {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(28px);
+        }
+
+        footer {
+            text-align: center;
+            color: white;
+            padding: 30px 20px;
+            margin-top: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        footer h4 {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        footer p {
+            margin: 8px 0;
+            font-size: 1rem;
+            opacity: 0.95;
+        }
+
+        footer .copyright {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            opacity: 0.8;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            padding-top: 15px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .dashboard {
+                grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2rem;
+            }
+
+            header p {
+                font-size: 1rem;
+            }
+
+            .institution-info h3 {
+                font-size: 1.2rem;
+            }
+
+            .developers {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .developer {
+                justify-content: center;
+            }
+
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+
+            .preset-buttons {
+                flex-direction: column;
+            }
+
+            .preset-btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .card h2 {
+                font-size: 1.3rem;
+            }
+
+            .concrete-type-badge {
+                font-size: 1.1rem;
+                padding: 12px 25px;
+            }
+
+            .results-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+
+            .result-value {
+                font-size: 1.6rem;
+            }
+
+            .proportion-text {
+                font-size: 1.2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+
+            header h1 {
+                font-size: 1.6rem;
+            }
+
+            .institution-info {
+                padding: 15px;
+            }
+
+            .card {
+                padding: 18px;
+                border-radius: 15px;
+            }
+
+            input, select {
+                padding: 10px 12px;
+                font-size: 0.95rem;
+            }
+
+            .btn {
+                padding: 12px;
+                font-size: 1rem;
+            }
+
+            .results-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+        }
+
+        /* Loading animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Card entrance animations with delays */
+        .card:nth-child(1) { animation-delay: 0.1s; }
+        .card:nth-child(2) { animation-delay: 0.2s; }
+        .card:nth-child(3) { animation-delay: 0.3s; }
+        .card:nth-child(4) { animation-delay: 0.4s; }
+        .card:nth-child(5) { animation-delay: 0.5s; }
+        .card:nth-child(6) { animation-delay: 0.6s; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏗️ Advanced Concrete Mix Design Dashboard</h1>
+            <p>Professional Mix Design with SCMs, Fine Aggregate Alternatives & Chemical Admixtures</p>
+            
+            <div class="institution-info">
+                <h3>👨‍🔬 Development Team</h3>
+                <div class="developers">
+                    <div class="developer">
+                        <span class="developer-icon">👨‍🎓</span>
+                        <span>Dr. Riaz Bhanbhro</span>
+                    </div>
+                    <div class="developer">
+                        <span class="developer-icon">👨‍🏫</span>
+                        <span>Dr. Mahboob Oad</span>
+                    </div>
+                    <div class="developer">
+                        <span class="developer-icon">👨‍💼</span>
+                        <span>Dr. Muneeb Memon</span>
+                    </div>
+                </div>
+                <div class="institution-details">
+                    <strong>🏛️ Quaid-e-Awam University of Engineering, Science & Technology</strong><br>
+                    Civil Engineering Department | 2025
+                </div>
+            </div>
+        </header>
+
+        <!-- Quick Presets -->
+        <div class="preset-buttons">
+            <button class="preset-btn" onclick="loadPreset('normal')">🏢 Normal Concrete</button>
+            <button class="preset-btn" onclick="loadPreset('hpc')">⚡ High-Performance</button>
+            <button class="preset-btn" onclick="loadPreset('uhpc')">💎 Ultra-High Performance</button>
+            <button class="preset-btn" onclick="loadPreset('scc')">🌊 Self-Compacting</button>
+            <button class="preset-btn" onclick="loadPreset('mass')">🏔️ Mass Concrete</button>
+            <button class="preset-btn" onclick="loadPreset('marine')">🌊 Marine Grade</button>
+        </div>
+
+        <div class="dashboard">
+            <!-- Concrete Type Selection -->
+            <div class="card preset-card">
+                <h2>🎯 Concrete Type & Strength</h2>
+                <div class="form-group">
+                    <label>Concrete Grade</label>
+                    <select id="concreteGrade" onchange="updateFromGrade()">
+                        <option value="15">M15 (15 MPa)</option>
+                        <option value="20">M20 (20 MPa)</option>
+                        <option value="25">M25 (25 MPa)</option>
+                        <option value="30" selected>M30 (30 MPa)</option>
+                        <option value="35">M35 (35 MPa)</option>
+                        <option value="40">M40 (40 MPa)</option>
+                        <option value="50">M50 (50 MPa)</option>
+                        <option value="60">M60 (60 MPa)</option>
+                        <option value="70">M70 (70 MPa)</option>
+                        <option value="80">M80 (80 MPa)</option>
+                        <option value="custom">Custom</option>
+                    </select>
+                </div>
+                <div class="form-group" id="customStrengthGroup" style="display: none;">
+                    <label>Custom Target Strength (MPa)</label>
+                    <input type="number" id="targetStrength" value="30" min="10" max="120" onchange="calculateMix()">
+                </div>
+                <div class="form-group">
+                    <label>Exposure Condition</label>
+                    <select id="exposure" onchange="calculateMix()">
+                        <option value="mild">Mild (Interior, Dry)</option>
+                        <option value="moderate" selected>Moderate (Sheltered from Rain)</option>
+                        <option value="severe">Severe (Exposed to Weather)</option>
+                        <option value="very-severe">Very Severe (Coastal, Chemical)</option>
+                        <option value="marine">Marine/Coastal Splash Zone</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Standard Deviation (MPa) <span class="label-info">Quality Control</span></label>
+                    <input type="number" id="stdDev" value="5.0" step="0.1" min="2.0" max="10.0" onchange="calculateMix()">
+                </div>
+            </div>
+
+            <!-- W/C Ratio Control -->
+            <div class="card">
+                <h2>💧 Water-Cement Ratio Control</h2>
+                <div class="form-group">
+                    <label>
+                        W/C Ratio Mode
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="manualWC" onchange="toggleWCMode()">
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <span id="wcModeLabel" style="margin-left: 10px; font-weight: 600; color: #667eea;">Auto</span>
+                    </label>
+                </div>
+                <div id="autoWCInfo" class="info-box" style="margin-top: 10px;">
+                    <p><strong>Auto Mode:</strong> W/C ratio calculated based on target strength and exposure conditions per ACI guidelines.</p>
+                </div>
+                <div id="manualWCControl" style="display: none;">
+                    <div class="form-group">
+                        <label>Manual W/C Ratio <span class="label-info">Typical: 0.35-0.55</span></label>
+                        <input type="number" id="manualWCValue" value="0.45" step="0.01" min="0.25" max="0.70" onchange="calculateMix()">
+                    </div>
+                    <div class="warning-box">
+                        ⚠️ Ensure manual W/C ratio meets exposure requirements and achieves target strength.
+                    </div>
+                </div>
+                
+                <div class="form-group" style="margin-top: 15px;">
+                    <label>Maximum Aggregate Size (mm)</label>
+                    <select id="maxAggSize" onchange="calculateMix()">
+                        <option value="10">10 mm</option>
+                        <option value="20" selected>20 mm</option>
+                        <option value="40">40 mm</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Workability (Slump in mm)</label>
+                    <select id="slump" onchange="calculateMix()">
+                        <option value="25">Very Low (25-50 mm) - Pavement</option>
+                        <option value="75">Low (50-100 mm) - Foundations</option>
+                        <option value="125" selected>Medium (100-150 mm) - Slabs, Beams</option>
+                        <option value="175">High (150-200 mm) - Columns</option>
+                        <option value="225">Very High (>200 mm) - SCC/Pumping</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Cement Replacements (SCMs) -->
+            <div class="card scm-card">
+                <h2>🔬 Supplementary Cementitious Materials</h2>
+                
+                <div class="checkbox-group">
+                    <input type="checkbox" id="useFlyAsh" onchange="toggleSCM('flyAsh')">
+                    <label for="useFlyAsh">Fly Ash</label>
+                </div>
+                
+                <div id="flyAshOptions" style="display: none; background: #f8f9fa; padding: 15px; border-radius: 10px; margin-top: 10px; border: 2px solid #ff6b6b;">
+                    <div class="form-group">
+                        <label>Fly Ash Type</label>
+                        <select id="flyAshType" onchange="calculateMix()">
+                            <option value="classF">Class F (Low Calcium, Pozzolanic)</option>
+                            <option value="classC">Class C (High Calcium, Cementitious)</option>
+                        </select>
+                        <span class="label-benefit">✓ Improves durability, reduces heat</span>
+                    </div>
+                    <div class="form-group">
+                        <label>Replacement % <span class="label-info">Typical: 15-35%</span></label>
+                        <div style="margin: 15px 0;">
+                            <input type="range" id="flyAshPercent" min="10" max="40" value="25" step="5" oninput="updateSliderValue('flyAsh'); calculateMix(false)" style="width: 100%;">
+                        </div>
+                        <span class="slider-value scm-value" id="flyAshValue">25%</span>
+                    </div>
+                    <div class="form-group">
+                        <label>Specific Gravity</label>
+                        <input type="number" id="flyAshSG" value="2.3" step="0.01" min="2.0" max="2.8" onchange="calculateMix()">
+                    </div>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="useGGBS" onchange="toggleSCM('ggbs')">
+                    <label for="useGGBS">GGBS (Slag Cement)</label>
+                </div>
+                
+                <div id="ggbsOptions" style="display: none; background: #f8f9fa; padding: 15px; border-radius: 10px; margin-top: 10px; border: 2px solid #ff6b6b;">
+                    <div class="form-group">
+                        <label>Replacement % <span class="label-info">Typical: 30-70%</span></label>
+                        <div style="margin: 15px 0;">
+                            <input type="range" id="ggbsPercent" min="25" max="75" value="50" step="5" oninput="updateSliderValue('ggbs'); calculateMix(false)" style="width: 100%;">
+                        </div>
+                        <span class="slider-value scm-value" id="ggbsValue">50%</span>
+                        <span class="label-benefit">✓ Excellent durability, low heat, sulfate resistant</span>
+                    </div>
+                    <div class="form-group">
+                        <label>Specific Gravity</label>
+                        <input type="number" id="ggbsSG" value="2.90" step="0.01" min="2.80" max="3.00" onchange="calculateMix()">
+                    </div>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="useSilicaFume" onchange="toggleSCM('silicaFume')">
+                    <label for="useSilicaFume">Silica Fume (Microsilica)</label>
+                </div>
+                
+                <div id="silicaFumeOptions" style="display: none; background: #f8f9fa; padding: 15px; border-radius: 10px; margin-top: 10px; border: 2px solid #ff6b6b;">
+                    <div class="form-group">
+                        <label>Replacement % <span class="label-info">Typical: 5-10%</span></label>
+                        <div style="margin: 15px 0;">
+                            <input type="range" id="silicaFumePercent" min="3" max="15" value="7" step="1" oninput="updateSliderValue('silicaFume'); calculateMix(false)" style="width: 100%;">
+                        </div>
+                        <span class="slider-value scm-value" id="silicaFumeValue">7%</span>
+                        <span class="label-benefit">✓ Very high strength, ultra-low permeability</span>
+                    </div>
+                    <div class="form-group">
+                        <label>Specific Gravity</label>
+                        <input type="number" id="silicaFumeSG" value="2.25" step="0.01" min="2.15" max="2.35" onchange="calculateMix()">
+                    </div>
+                    <div class="warning-box">⚠️ Requires superplasticizer for proper dispersion</div>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="useMetakaolin" onchange="toggleSCM('metakaolin')">
+                    <label for="useMetakaolin">Metakaolin</label>
+                </div>
+                
+                <div id="metakaolinOptions" style="display: none; background: #f8f9fa; padding: 15px; border-radius: 10px; margin-top: 10px; border: 2px solid #ff6b6b;">
+                    <div class="form-group">
+                        <label>Replacement % <span class="label-info">Typical: 8-15%</span></label>
+                        <div style="margin: 15px 0;">
+                            <input type="range" id="metakaolinPercent" min="5" max="20" value="10" step="1" oninput="updateSliderValue('metakaolin'); calculateMix(false)" style="width: 100%;">
+                        </div>
+                        <span class="slider-value scm-value" id="metakaolinValue">10%</span>
+                        <span class="label-benefit">✓ Enhanced durability, reduced efflorescence</span>
+                    </div>
+                    <div class="form-group">
+                        <label>Specific Gravity</label>
+                        <input type="number" id="metakaolinSG" value="2.55" step="0.01" min="2.50" max="2.65" onchange="calculateMix()">
+                    </div>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="useRHA" onchange="toggleSCM('rha')">
+                    <label for="useRHA">Rice Husk Ash</label>
+                </div>
+                
+                <div id="rhaOptions" style="display: none; background: #f8f9fa; padding: 15px; border-radius: 10px; margin-top: 10px; border: 2px solid #ff6b6b;">
+                    <div class="form-group">
+                        <label>Replacement % <span class="label-info">Typical: 10-15%</span></label>
+                        <div style="margin: 15px 0;">
+                            <input type="range" id="rhaPercent" min="5" max="20" value="12" step="1" oninput="updateSliderValue('rha'); calculateMix(false)" style="width: 100%;">
+                        </div>
+                        <span class="slider-value scm-value" id="rhaValue">12%</span>
+                        <span class="label-benefit">✓ Sustainable, good pozzolanic activity</span>
+                    </div>
+                    <div class="form-group">
+                        <label>Specific Gravity</label>
+                        <input type="number" id="rhaSG" value="2.15" step="0.01" min="2.00" max="2.30" onchange="calculateMix()">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fine Aggregate Alternatives -->
+            <div class="card aggregate-card">
+                <h2>🪨 Fine Aggregate Alternatives</h2>
+                
+                <div class="form-group">
+                    <label>Primary Fine Aggregate Type</label>
+                    <select id="fineAggType" onchange="updateFineAggProperties(); calculateMix()">
+                        <option value="natural">Natural River/Pit Sand</option>
+                        <option value="msand">Manufactured Sand (M-Sand)</option>
+                        <option value="mixed">Mixed (50% Natural + 50% M-Sand)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Fine Aggregate Specific Gravity</label>
+                    <input type="number" id="fineSG" value="2.65" step="0.01" min="2.5" max="2.85" onchange="calculateMix()">
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="useQuarryDust" onchange="toggleFineAggReplacement('quarryDust')">
+                    <label for="useQuarryDust">Add Quarry Dust</label>
+                </div>
+                
+                <div id="quarryDustOptions" style="display: none; background: #f8f9fa; padding: 15px; border-radius: 10px; margin-top: 10px; border: 2px solid #06d6a0;">
+                    <div class="form-group">
+                        <label>Quarry Dust % <span class="label-info">Max: 50%</span></label>
+                        <div style="margin: 15px 0;">
+                            <input type="range" id="quarryDustPercent" min="10" max="50" value="30" step="5" oninput="updateSliderValue('quarryDust'); calculateMix(false)" style="width: 100%;">
+                        </div>
+                        <span class="slider-value agg-value" id="quarryDustValue">30%</span>
+                        <span class="label-benefit">✓ Improves cohesion, reduces segregation</span>
+                    </div>
+                    <div class="form-group">
+                        <label>Specific Gravity</label>
+                        <input type="number" id="quarryDustSG" value="2.68" step="0.01" min="2.50" max="2.80" onchange="calculateMix()">
+                    </div>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="useStoneDust" onchange="toggleFineAggReplacement('stoneDust')">
+                    <label for="useStoneDust">Add Stone Dust</label>
+                </div>
+                
+                <div id="stoneDustOptions" style="display: none; background: #f8f9fa; padding: 15px; border-radius: 10px; margin-top: 10px; border: 2px solid #06d6a0;">
+                    <div class="form-group">
+                        <label>Stone Dust % <span class="label-info">Max: 40%</span></label>
+                        <div style="margin: 15px 0;">
+                            <input type="range" id="stoneDustPercent" min="10" max="40" value="25" step="5" oninput="updateSliderValue('stoneDust'); calculateMix(false)" style="width: 100%;">
+                        </div>
+                        <span class="slider-value agg-value" id="stoneDustValue">25%</span>
+                        <span class="label-benefit">✓ Fills voids, improves compaction</span>
+                    </div>
+                    <div class="form-group">
+                        <label>Specific Gravity</label>
+                        <input type="number" id="stoneDustSG" value="2.70" step="0.01" min="2.55" max="2.80" onchange="calculateMix()">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Total Fine Aggregate (% of Total Aggregate)</label>
+                    <input type="number" id="fineAggPercent" value="38" min="25" max="50" step="1" onchange="calculateMix()">
+                </div>
+
+                <div class="form-group">
+                    <label>Coarse Aggregate Specific Gravity</label>
+                    <input type="number" id="coarseSG" value="2.70" step="0.01" min="2.5" max="2.9" onchange="calculateMix()">
+                </div>
+            </div>
+
+            <!-- Chemical Admixtures -->
+            <div class="card">
+                <h2>⚗️ Chemical Admixtures</h2>
+                
+                <div class="checkbox-group">
+                    <input type="checkbox" id="useSuperplasticizer" onchange="toggleSuperplasticizer()">
+                    <label for="useSuperplasticizer">Superplasticizer (HRWR)</label>
+                </div>
+                
+                <div id="superplasticizerOptions" style="display: none; background: #f8f9fa; padding: 15px; border-radius: 10px; margin-top: 10px; border: 2px solid #2196f3;">
+                    <div class="form-group">
+                        <label>Superplasticizer Type</label>
+                        <select id="superplasticizerType" onchange="updateWaterReduction()">
+                            <option value="PCE">PCE Based (Polycarboxylate Ether)</option>
+                            <option value="SNF">SNF Based (Sulphonated Naphthalene)</option>
+                            <option value="SMF">SMF Based (Sulphonated Melamine)</option>
+                            <option value="ligno">Lignosulfonate Based</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Dosage (% by cementitious weight) <span class="label-info">Typical: 0.5-2.0%</span></label>
+                        <div style="margin: 15px 0;">
+                            <input type="range" id="superplasticizerDosage" value="1.2" step="0.1" min="0.1" max="3.5" oninput="updateSliderValue('superplasticizer'); updateWaterReduction()" style="width: 100%;">
+                        </div>
+                        <span class="slider-value" id="superplasticizerValue" style="background: linear-gradient(135deg, #2196f3, #1565c0);">1.2%</span>
+                    </div>
+                    <div class="form-group">
+                        <label>Water Reduction <span class="label-info">(Auto-calculated)</span></label>
+                        <input type="number" id="waterReduction" value="25" disabled>
+                        <span class="benefit-badge" id="waterReductionBadge">25% reduction</span>
+                    </div>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="useRetarder" onchange="toggleAdmixture('retarder')">
+                    <label for="useRetarder">Retarder (Hot Weather)</label>
+                </div>
+
+                <div id="retarderOptions" style="display: none; background: #f8f9fa; padding: 15px; border-radius: 10px; margin-top: 10px; border: 2px solid #ff9800;">
+                    <div class="form-group">
+                        <label>Dosage (% by cementitious weight) <span class="label-info">Typical: 0.2-0.5%</span></label>
+                        <div style="margin: 15px 0;">
+                            <input type="range" id="retarderDosage" value="0.3" step="0.05" min="0.1" max="0.8" oninput="updateSliderValue('retarder'); calculateMix(false)" style="width: 100%;">
+                        </div>
+                        <span class="slider-value" id="retarderValue" style="background: linear-gradient(135deg, #ff9800, #f57c00);">0.3%</span>
+                        <span class="label-benefit">✓ Delays setting time 2-4 hours</span>
+                    </div>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="useAccelerator" onchange="toggleAdmixture('accelerator')">
+                    <label for="useAccelerator">Accelerator (Cold Weather)</label>
+                </div>
+
+                <div id="acceleratorOptions" style="display: none; background: #f8f9fa; padding: 15px; border-radius: 10px; margin-top: 10px; border: 2px solid #4caf50;">
+                    <div class="form-group">
+                        <label>Dosage (% by cementitious weight) <span class="label-info">Typical: 1-2%</span></label>
+                        <div style="margin: 15px 0;">
+                            <input type="range" id="acceleratorDosage" value="1.5" step="0.1" min="0.5" max="3.0" oninput="updateSliderValue('accelerator'); calculateMix(false)" style="width: 100%;">
+                        </div>
+                        <span class="slider-value" id="acceleratorValue" style="background: linear-gradient(135deg, #4caf50, #388e3c);">1.5%</span>
+                        <span class="label-benefit">✓ Speeds setting time, early strength gain</span>
+                    </div>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="useAirEntraining" onchange="toggleAirEntraining()">
+                    <label for="useAirEntraining">Air-Entraining Agent</label>
+                </div>
+
+                <div id="airEntrainingOptions" style="display: none; background: #f8f9fa; padding: 15px; border-radius: 10px; margin-top: 10px; border: 2px solid #00bcd4;">
+                    <div class="form-group">
+                        <label>Target Air Content (%) <span class="label-info">Typical: 4-7%</span></label>
+                        <div style="margin: 15px 0;">
+                            <input type="range" id="airContent" value="5.5" step="0.5" min="3" max="9" oninput="updateSliderValue('airContent'); calculateMix(false)" style="width: 100%;">
+                        </div>
+                        <span class="slider-value" id="airContentValue" style="background: linear-gradient(135deg, #00bcd4, #0097a7);">5.5%</span>
+                        <span class="label-benefit">✓ Improved freeze-thaw resistance</span>
+                    </div>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="useWaterproofing" onchange="toggleAdmixture('waterproofing')">
+                    <label for="useWaterproofing">Waterproofing Agent</label>
+                </div>
+
+                <div id="waterproofingOptions" style="display: none; background: #f8f9fa; padding: 15px; border-radius: 10px; margin-top: 10px; border: 2px solid #9c27b0;">
+                    <div class="form-group">
+                        <label>Dosage (% by cementitious weight) <span class="label-info">Typical: 1-3%</span></label>
+                        <div style="margin: 15px 0;">
+                            <input type="range" id="waterproofingDosage" value="2.0" step="0.1" min="0.5" max="4.0" oninput="updateSliderValue('waterproofing'); calculateMix(false)" style="width: 100%;">
+                        </div>
+                        <span class="slider-value" id="waterproofingValue" style="background: linear-gradient(135deg, #9c27b0, #7b1fa2);">2.0%</span>
+                        <span class="label-benefit">✓ Reduced permeability, water resistance</span>
+                    </div>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="useViscosity" onchange="toggleAdmixture('viscosity')">
+                    <label for="useViscosity">Viscosity Modifying Agent (VMA)</label>
+                </div>
+
+                <div id="viscosityOptions" style="display: none; background: #f8f9fa; padding: 15px; border-radius: 10px; margin-top: 10px; border: 2px solid #e91e63;">
+                    <div class="form-group">
+                        <label>Dosage (% by cementitious weight) <span class="label-info">Typical: 0.05-0.3%</span></label>
+                        <div style="margin: 15px 0;">
+                            <input type="range" id="viscosityDosage" value="0.15" step="0.05" min="0.03" max="0.5" oninput="updateSliderValue('viscosity'); calculateMix(false)" style="width: 100%;">
+                        </div>
+                        <span class="slider-value" id="viscosityValue" style="background: linear-gradient(135deg, #e91e63, #c2185b);">0.15%</span>
+                        <span class="label-benefit">✓ Improved cohesion, reduced segregation</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Material Properties -->
+            <div class="card">
+                <h2>🔧 Cement & Parameters</h2>
+                <div class="form-group">
+                    <label>Primary Cement Type</label>
+                    <select id="cementType" onchange="calculateMix()">
+                        <option value="OPC43">OPC 43 Grade</option>
+                        <option value="OPC53" selected>OPC 53 Grade</option>
+                        <option value="PPC">Portland Pozzolana Cement</option>
+                        <option value="PSC">Portland Slag Cement</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Cement Specific Gravity</label>
+                    <input type="number" id="cementSG" value="3.15" step="0.01" min="2.8" max="3.3" onchange="calculateMix()">
+                </div>
+                <div class="form-group">
+                    <label>Type of Placement</label>
+                    <select id="placement" onchange="calculateMix()">
+                        <option value="manual">Manual (Wheelbarrow)</option>
+                        <option value="pump" selected>Pump/Conveyor</option>
+                        <option value="tremie">Tremie (Underwater)</option>
+                        <option value="scc">Self-Compacting</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Degree of Quality Control</label>
+                    <select id="qualityControl" onchange="calculateMix()">
+                        <option value="fair">Fair (σ = 6-8 MPa)</option>
+                        <option value="good" selected>Good (σ = 4-6 MPa)</option>
+                        <option value="excellent">Excellent (σ = 2-4 MPa)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Volume to Calculate (m³)</label>
+                    <input type="number" id="volume" value="1" step="0.1" min="0.1" max="1000" onchange="calculateMix()">
+                </div>
+                <button class="btn" onclick="calculateMix(true)">🔬 Calculate Mix Design</button>
+            </div>
+
+            <!-- Results -->
+            <div class="card results-card" id="resultsCard" style="display: none;">
+                <h2>📊 Mix Design Results</h2>
+                
+                <!-- Concrete Type Display -->
+                <div style="text-align: center;">
+                    <div class="concrete-type-badge" id="concreteTypeBadge">NORMAL CONCRETE</div>
+                </div>
+
+                <div class="results-grid">
+                    <div class="result-item scm-highlight">
+                        <div class="result-label">OPC Cement</div>
+                        <div class="result-value" id="cementResult">0</div>
+                        <div class="result-unit">kg/m³</div>
+                    </div>
+                    <div class="result-item scm-highlight" id="scmResultItem" style="display: none;">
+                        <div class="result-label" id="scmResultLabel">SCM</div>
+                        <div class="result-value" id="scmResult">0</div>
+                        <div class="result-unit">kg/m³</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-label">Total Cementitious</div>
+                        <div class="result-value" id="totalCementResult">0</div>
+                        <div class="result-unit">kg/m³</div>
+                    </div>
+                    <div class="result-item highlight">
+                        <div class="result-label">Water</div>
+                        <div class="result-value" id="waterResult">0</div>
+                        <div class="result-unit">kg/m³</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-label">Fine Aggregate</div>
+                        <div class="result-value" id="fineResult">0</div>
+                        <div class="result-unit">kg/m³</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-label">Coarse Aggregate</div>
+                        <div class="result-value" id="coarseResult">0</div>
+                        <div class="result-unit">kg/m³</div>
+                    </div>
+                    <div class="result-item highlight">
+                        <div class="result-label">W/C Ratio</div>
+                        <div class="result-value" id="wcRatio">0</div>
+                        <div class="result-unit"></div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-label">Mix Strength</div>
+                        <div class="result-value" id="mixStrength">0</div>
+                        <div class="result-unit">MPa</div>
+                    </div>
+                </div>
+
+                <!-- Concrete Type Information -->
+                <div id="concreteTypeInfo">
+                    <div class="concrete-type-box">
+                        <h3>🎯 Concrete Type Classification</h3>
+                        <div id="concreteTypeDetails"></div>
+                    </div>
+                </div>
+
+                <div id="scmResults" style="display: none;">
+                    <div class="scm-box">
+                        <h3>🔬 SCM Composition & Benefits</h3>
+                        <div id="scmDetails"></div>
+                    </div>
+                </div>
+
+                <div id="fineAggResults" style="display: none;">
+                    <div class="scm-box" style="background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); border-left-color: #27ae60;">
+                        <h3 style="color: #1b5e20;">🪨 Fine Aggregate Composition</h3>
+                        <div id="fineAggDetails"></div>
+                    </div>
+                </div>
+
+                <div id="admixtureResults" style="display: none;">
+                    <div class="admixture-box">
+                        <h3>🧪 Chemical Admixtures Used</h3>
+                        <div id="admixtureDetails"></div>
+                    </div>
+                </div>
+
+                <div class="mix-proportions">
+                    <h3>Mix Proportions by Weight</h3>
+                    <div class="proportion-text" id="proportions">1 : 0 : 0</div>
+                    <p style="text-align: center; margin-top: 12px; color: #666; font-size: 0.95rem;" id="proportionBreakdown"></p>
+                </div>
+
+                <div class="info-box">
+                    <h3>📋 For <span id="volumeDisplay">1</span> m³ of Concrete</h3>
+                    <p id="totalQuantities"></p>
+                </div>
+
+                <div id="sustainabilityInfo" style="display: none;">
+                    <div class="info-box" style="background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); border-left-color: #4caf50;">
+                        <h3 style="color: #2e7d32;">🌱 Sustainability Impact</h3>
+                        <p id="sustainabilityDetails" style="color: #2e7d32;"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <h4>👨‍🏫 Development Team</h4>
+            <p><strong>Dr. Riaz Bhanbhro</strong> | Lead Developer</p>
+            <p><strong>Dr. Mahboob Oad</strong> | Technical Advisor</p>
+            <p><strong>Dr. Muneeb Memon</strong> | Research Consultant</p>
+            <div class="copyright">
+                <p><strong>🏛️ Quaid-e-Awam University of Engineering, Science & Technology</strong></p>
+                <p>Civil Engineering Department</p>
+                <p>© 2025 | All Rights Reserved</p>
+                <p style="margin-top: 10px; font-size: 0.85rem;">
+                    Educational Tool for Concrete Mix Design | Based on ACI Standards
+                </p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // [JAVASCRIPT CODE - Same as before, starting from preset loading functions]
+        // Preset loading functions
+        function loadPreset(type) {
+            document.getElementById('useFlyAsh').checked = false;
+            document.getElementById('useGGBS').checked = false;
+            document.getElementById('useSilicaFume').checked = false;
+            document.getElementById('useMetakaolin').checked = false;
+            document.getElementById('useRHA').checked = false;
+            document.getElementById('useSuperplasticizer').checked = false;
+            document.getElementById('useAirEntraining').checked = false;
+            document.getElementById('useRetarder').checked = false;
+            document.getElementById('useAccelerator').checked = false;
+            document.getElementById('useViscosity').checked = false;
+
+            ['flyAshOptions', 'ggbsOptions', 'silicaFumeOptions', 'metakaolinOptions', 'rhaOptions',
+             'superplasticizerOptions', 'airEntrainingOptions'].forEach(id => {
+                document.getElementById(id).style.display = 'none';
+            });
+
+            switch(type) {
+                case 'normal':
+                    document.getElementById('concreteGrade').value = '30';
+                    document.getElementById('exposure').value = 'moderate';
+                    document.getElementById('slump').value = '125';
+                    document.getElementById('useFlyAsh').checked = true;
+                    toggleSCM('flyAsh');
+                    document.getElementById('flyAshPercent').value = '25';
+                    break;
+
+                case 'hpc':
+                    document.getElementById('concreteGrade').value = '50';
+                    document.getElementById('exposure').value = 'severe';
+                    document.getElementById('slump').value = '175';
+                    document.getElementById('useSilicaFume').checked = true;
+                    document.getElementById('useFlyAsh').checked = true;
+                    document.getElementById('useSuperplasticizer').checked = true;
+                    toggleSCM('silicaFume');
+                    toggleSCM('flyAsh');
+                    toggleSuperplasticizer();
+                    document.getElementById('silicaFumePercent').value = '8';
+                    document.getElementById('flyAshPercent').value = '20';
+                    document.getElementById('superplasticizerDosage').value = '1.5';
+                    break;
+
+                case 'uhpc':
+                    document.getElementById('concreteGrade').value = '70';
+                    document.getElementById('exposure').value = 'very-severe';
+                    document.getElementById('slump').value = '175';
+                    document.getElementById('useSilicaFume').checked = true;
+                    document.getElementById('useMetakaolin').checked = true;
+                    document.getElementById('useSuperplasticizer').checked = true;
+                    toggleSCM('silicaFume');
+                    toggleSCM('metakaolin');
+                    toggleSuperplasticizer();
+                    document.getElementById('silicaFumePercent').value = '12';
+                    document.getElementById('metakaolinPercent').value = '15';
+                    document.getElementById('superplasticizerType').value = 'PCE';
+                    document.getElementById('superplasticizerDosage').value = '2.5';
+                    document.getElementById('fineAggType').value = 'msand';
+                    break;
+
+                case 'scc':
+                    document.getElementById('concreteGrade').value = '35';
+                    document.getElementById('exposure').value = 'moderate';
+                    document.getElementById('slump').value = '225';
+                    document.getElementById('placement').value = 'scc';
+                    document.getElementById('useFlyAsh').checked = true;
+                    document.getElementById('useSuperplasticizer').checked = true;
+                    document.getElementById('useViscosity').checked = true;
+                    toggleSCM('flyAsh');
+                    toggleSuperplasticizer();
+                    document.getElementById('flyAshPercent').value = '30';
+                    document.getElementById('superplasticizerType').value = 'PCE';
+                    document.getElementById('superplasticizerDosage').value = '2.0';
+                    document.getElementById('fineAggPercent').value = '45';
+                    break;
+
+                case 'mass':
+                    document.getElementById('concreteGrade').value = '25';
+                    document.getElementById('exposure').value = 'moderate';
+                    document.getElementById('slump').value = '75';
+                    document.getElementById('useGGBS').checked = true;
+                    document.getElementById('useFlyAsh').checked = true;
+                    document.getElementById('useRetarder').checked = true;
+                    toggleSCM('ggbs');
+                    toggleSCM('flyAsh');
+                    document.getElementById('ggbsPercent').value = '50';
+                    document.getElementById('flyAshPercent').value = '20';
+                    break;
+
+                case 'marine':
+                    document.getElementById('concreteGrade').value = '40';
+                    document.getElementById('exposure').value = 'marine';
+                    document.getElementById('slump').value = '125';
+                    document.getElementById('useGGBS').checked = true;
+                    document.getElementById('useSilicaFume').checked = true;
+                    document.getElementById('useSuperplasticizer').checked = true;
+                    toggleSCM('ggbs');
+                    toggleSCM('silicaFume');
+                    toggleSuperplasticizer();
+                    document.getElementById('ggbsPercent').value = '55';
+                    document.getElementById('silicaFumePercent').value = '7';
+                    document.getElementById('superplasticizerDosage').value = '1.3';
+                    break;
+            }
+
+            updateFromGrade();
+            updateWaterReduction();
+            calculateMix(false);
+        }
+
+        function updateFromGrade() {
+            const grade = document.getElementById('concreteGrade').value;
+            const customGroup = document.getElementById('customStrengthGroup');
+            
+            if (grade === 'custom') {
+                customGroup.style.display = 'block';
+            } else {
+                customGroup.style.display = 'none';
+                document.getElementById('targetStrength').value = grade;
+                calculateMix(false);
+            }
+        }
+
+        function toggleWCMode() {
+            const isManual = document.getElementById('manualWC').checked;
+            const modeLabel = document.getElementById('wcModeLabel');
+            const autoInfo = document.getElementById('autoWCInfo');
+            const manualControl = document.getElementById('manualWCControl');
+            
+            if (isManual) {
+                modeLabel.textContent = 'Manual';
+                modeLabel.style.color = '#ff6b6b';
+                autoInfo.style.display = 'none';
+                manualControl.style.display = 'block';
+            } else {
+                modeLabel.textContent = 'Auto';
+                modeLabel.style.color = '#667eea';
+                autoInfo.style.display = 'block';
+                manualControl.style.display = 'none';
+            }
+            calculateMix(false);
+        }
+
+        function toggleSCM(scmType) {
+            // Handle special cases for acronyms
+            let checkboxId;
+            if (scmType === 'ggbs') {
+                checkboxId = 'useGGBS';
+            } else if (scmType === 'rha') {
+                checkboxId = 'useRHA';
+            } else {
+                checkboxId = `use${scmType.charAt(0).toUpperCase() + scmType.slice(1)}`;
+            }
+            
+            const checkbox = document.getElementById(checkboxId);
+            const options = document.getElementById(`${scmType}Options`);
+            
+            if (options) {
+                options.style.display = checkbox.checked ? 'block' : 'none';
+                
+                if (checkbox.checked) {
+                    updateSliderValue(scmType);
+                }
+                calculateMix(false);
+            }
+        }
+
+        function toggleFineAggReplacement(aggType) {
+            const checkbox = document.getElementById(`use${aggType.charAt(0).toUpperCase() + aggType.slice(1)}`);
+            const options = document.getElementById(`${aggType}Options`);
+            options.style.display = checkbox.checked ? 'block' : 'none';
+            
+            if (checkbox.checked) {
+                updateSliderValue(aggType);
+            }
+            calculateMix(false);
+        }
+
+        function updateSliderValue(type) {
+            // Handle SCM and aggregate sliders with "Percent" suffix
+            let slider = document.getElementById(`${type}Percent`);
+            let valueDisplay = document.getElementById(`${type}Value`);
+            
+            // Handle admixture sliders with "Dosage" or direct ID
+            if (!slider) {
+                slider = document.getElementById(`${type}Dosage`) || document.getElementById(type);
+            }
+            
+            if (slider && valueDisplay) {
+                valueDisplay.textContent = slider.value + '%';
+            }
+        }
+
+        function toggleAdmixture(admType) {
+            const checkbox = document.getElementById(`use${admType.charAt(0).toUpperCase() + admType.slice(1)}`);
+            const options = document.getElementById(`${admType}Options`);
+            options.style.display = checkbox.checked ? 'block' : 'none';
+            
+            if (checkbox.checked) {
+                updateSliderValue(admType);
+            }
+            calculateMix(false);
+        }
+
+        function updateFineAggProperties() {
+            const fineAggType = document.getElementById('fineAggType').value;
+            const fineSGInput = document.getElementById('fineSG');
+            
+            switch(fineAggType) {
+                case 'natural':
+                    fineSGInput.value = '2.65';
+                    break;
+                case 'msand':
+                    fineSGInput.value = '2.74';
+                    break;
+                case 'mixed':
+                    fineSGInput.value = '2.70';
+                    break;
+            }
+        }
+
+        function toggleSuperplasticizer() {
+            const checked = document.getElementById('useSuperplasticizer').checked;
+            document.getElementById('superplasticizerOptions').style.display = checked ? 'block' : 'none';
+            if (checked) {
+                updateWaterReduction();
+            } else {
+                calculateMix(false);
+            }
+        }
+
+        function toggleAirEntraining() {
+            const checked = document.getElementById('useAirEntraining').checked;
+            document.getElementById('airEntrainingOptions').style.display = checked ? 'block' : 'none';
+            calculateMix(false);
+        }
+
+        function updateWaterReduction() {
+            const spType = document.getElementById('superplasticizerType').value;
+            const dosage = parseFloat(document.getElementById('superplasticizerDosage').value);
+
+            let waterReduction;
+            switch(spType) {
+                case 'PCE':
+                    waterReduction = Math.min(18 + (dosage * 13), 40);
+                    break;
+                case 'SNF':
+                    waterReduction = Math.min(12 + (dosage * 10), 30);
+                    break;
+                case 'SMF':
+                    waterReduction = Math.min(12 + (dosage * 10), 28);
+                    break;
+                case 'ligno':
+                    waterReduction = Math.min(8 + (dosage * 6), 18);
+                    break;
+                default:
+                    waterReduction = 25;
+            }
+
+            waterReduction = Math.round(waterReduction);
+            document.getElementById('waterReduction').value = waterReduction;
+            document.getElementById('waterReductionBadge').textContent = waterReduction + '% reduction';
+            calculateMix(false);
+        }
+
+        function determineConcreteType(params) {
+            const { strength, wcRatio, slump, hasSilicaFume, hasVMA, totalSCM, placement, useSP } = params;
+
+            let type = 'normal';
+            let className = 'normal';
+            let description = '';
+            let applications = '';
+            let characteristics = '';
+
+            if (strength >= 60 && wcRatio <= 0.35 && hasSilicaFume && useSP) {
+                type = 'Ultra-High Performance Concrete (UHPC)';
+                className = 'uhpc';
+                description = 'Ultra-high strength, very low permeability, exceptional durability';
+                applications = 'Bridges, high-rise buildings, precast elements, protective structures';
+                characteristics = `Compressive strength >60 MPa, W/C <0.35, Contains silica fume, High superplasticizer dosage`;
+            }
+            else if (slump >= 200 && hasVMA && useSP && placement === 'scc') {
+                type = 'Self-Compacting Concrete (SCC)';
+                className = 'scc';
+                description = 'Flows under its own weight, no vibration needed, excellent finish';
+                applications = 'Complex forms, congested reinforcement, architectural elements, precast';
+                characteristics = `Slump flow >600mm, High powder content, VMA required, No vibration needed`;
+            }
+            else if (strength >= 40 && wcRatio <= 0.40 && useSP) {
+                type = 'High-Performance Concrete (HPC)';
+                className = 'hpc';
+                description = 'High strength, enhanced durability, low permeability';
+                applications = 'High-rise buildings, marine structures, parking structures, bridge decks';
+                characteristics = `Compressive strength 40-60 MPa, W/C ≤0.40, Superplasticizer required`;
+            }
+            else if (totalSCM >= 50 && strength <= 35) {
+                type = 'Mass Concrete';
+                className = 'mass';
+                description = 'Low heat generation, reduced thermal cracking, high SCM content';
+                applications = 'Dams, foundations, raft slabs, large footings, retaining walls';
+                characteristics = `High SCM content (≥50%), Low heat of hydration, Reduced early strength`;
+            }
+            else {
+                type = 'Normal Concrete';
+                className = 'normal';
+                description = 'Standard structural concrete for general construction';
+                applications = 'Residential buildings, commercial structures, pavements, general construction';
+                characteristics = `Compressive strength 20-40 MPa, W/C 0.40-0.60, Standard mix proportions`;
+            }
+
+            return { type, className, description, applications, characteristics };
+        }
+
+        function calculateMix(shouldScroll = false) {
+            const grade = document.getElementById('concreteGrade').value;
+            const targetStrength = grade === 'custom' ? 
+                parseFloat(document.getElementById('targetStrength').value) :
+                parseFloat(grade);
+            
+            const exposure = document.getElementById('exposure').value;
+            const maxAggSize = parseFloat(document.getElementById('maxAggSize').value);
+            const slump = parseFloat(document.getElementById('slump').value);
+            const cementSG = parseFloat(document.getElementById('cementSG').value);
+            const fineSG = parseFloat(document.getElementById('fineSG').value);
+            const coarseSG = parseFloat(document.getElementById('coarseSG').value);
+            const fineAggPercent = parseFloat(document.getElementById('fineAggPercent').value) / 100;
+            const stdDev = parseFloat(document.getElementById('stdDev').value);
+            const volume = parseFloat(document.getElementById('volume').value);
+            const placement = document.getElementById('placement').value;
+
+            const isManualWC = document.getElementById('manualWC').checked;
+
+            const useFlyAsh = document.getElementById('useFlyAsh').checked;
+            const useGGBS = document.getElementById('useGGBS').checked;
+            const useSilicaFume = document.getElementById('useSilicaFume').checked;
+            const useMetakaolin = document.getElementById('useMetakaolin').checked;
+            const useRHA = document.getElementById('useRHA').checked;
+
+            let totalSCMPercent = 0;
+            let scmComposition = [];
+            let waterDemandFactor = 1.0;
+            let strengthEfficiencyFactor = 1.0;
+
+            if (useFlyAsh) {
+                const percent = parseFloat(document.getElementById('flyAshPercent').value);
+                const type = document.getElementById('flyAshType').value;
+                totalSCMPercent += percent;
+                scmComposition.push({
+                    name: type === 'classF' ? 'Fly Ash (Class F)' : 'Fly Ash (Class C)',
+                    percent: percent,
+                    sg: parseFloat(document.getElementById('flyAshSG').value),
+                    benefits: type === 'classF' ? 
+                        'Reduced heat of hydration, improved long-term strength, enhanced durability' :
+                        'Better early strength, self-cementitious properties, reduced permeability'
+                });
+                waterDemandFactor -= percent / 100 * 0.08;
+                strengthEfficiencyFactor = type === 'classF' ? 0.95 : 0.98;
+            }
+
+            if (useGGBS) {
+                const percent = parseFloat(document.getElementById('ggbsPercent').value);
+                totalSCMPercent += percent;
+                scmComposition.push({
+                    name: 'GGBS (Slag Cement)',
+                    percent: percent,
+                    sg: parseFloat(document.getElementById('ggbsSG').value),
+                    benefits: 'Excellent sulfate resistance, very low heat, superior long-term strength, high density'
+                });
+                waterDemandFactor -= percent / 100 * 0.05;
+                strengthEfficiencyFactor = Math.min(strengthEfficiencyFactor, 0.92);
+            }
+
+            if (useSilicaFume) {
+                const percent = parseFloat(document.getElementById('silicaFumePercent').value);
+                totalSCMPercent += percent;
+                scmComposition.push({
+                    name: 'Silica Fume',
+                    percent: percent,
+                    sg: parseFloat(document.getElementById('silicaFumeSG').value),
+                    benefits: 'Ultra-high strength, very low permeability, excellent chloride resistance'
+                });
+                waterDemandFactor += percent / 100 * 0.15;
+                strengthEfficiencyFactor = Math.max(strengthEfficiencyFactor, 1.15);
+            }
+
+            if (useMetakaolin) {
+                const percent = parseFloat(document.getElementById('metakaolinPercent').value);
+                totalSCMPercent += percent;
+                scmComposition.push({
+                    name: 'Metakaolin',
+                    percent: percent,
+                    sg: parseFloat(document.getElementById('metakaolinSG').value),
+                    benefits: 'Enhanced durability, reduced efflorescence, improved aesthetics, good early strength'
+                });
+                waterDemandFactor += percent / 100 * 0.10;
+                strengthEfficiencyFactor = Math.max(strengthEfficiencyFactor, 1.05);
+            }
+
+            if (useRHA) {
+                const percent = parseFloat(document.getElementById('rhaPercent').value);
+                totalSCMPercent += percent;
+                scmComposition.push({
+                    name: 'Rice Husk Ash',
+                    percent: percent,
+                    sg: parseFloat(document.getElementById('rhaSG').value),
+                    benefits: 'Sustainable, high pozzolanic activity, improved strength, reduced permeability'
+                });
+                waterDemandFactor += percent / 100 * 0.08;
+                strengthEfficiencyFactor = Math.max(strengthEfficiencyFactor, 1.02);
+            }
+
+            if (totalSCMPercent > 75) {
+                alert('Total SCM replacement cannot exceed 75%. Please adjust your selections.');
+                return;
+            }
+
+            const useSuperplasticizer = document.getElementById('useSuperplasticizer').checked;
+            const waterReduction = useSuperplasticizer ? parseFloat(document.getElementById('waterReduction').value) : 0;
+            const useAirEntraining = document.getElementById('useAirEntraining').checked;
+            const airContent = useAirEntraining ? parseFloat(document.getElementById('airContent').value) / 100 : 0.02;
+            const useVMA = document.getElementById('useViscosity').checked;
+
+            const mixStrength = (targetStrength + 1.65 * stdDev) / strengthEfficiencyFactor;
+
+            let wcRatio;
+            if (isManualWC) {
+                wcRatio = parseFloat(document.getElementById('manualWCValue').value);
+            } else {
+                let maxWC;
+                switch(exposure) {
+                    case 'mild': maxWC = 0.55; break;
+                    case 'moderate': maxWC = 0.50; break;
+                    case 'severe': maxWC = 0.45; break;
+                    case 'very-severe': maxWC = 0.40; break;
+                    case 'marine': maxWC = 0.38; break;
+                    default: maxWC = 0.50;
+                }
+
+                let calculatedWC = 0.5 / (1 + (mixStrength - 20) / 80);
+                wcRatio = Math.max(calculatedWC, maxWC);
+            }
+
+            let baseWaterContent;
+            if (maxAggSize === 10) {
+                baseWaterContent = slump < 50 ? 185 : slump < 100 ? 205 : slump < 150 ? 225 : slump < 200 ? 240 : 260;
+            } else if (maxAggSize === 20) {
+                baseWaterContent = slump < 50 ? 170 : slump < 100 ? 190 : slump < 150 ? 210 : slump < 200 ? 225 : 245;
+            } else {
+                baseWaterContent = slump < 50 ? 160 : slump < 100 ? 175 : slump < 150 ? 195 : slump < 200 ? 210 : 230;
+            }
+
+            baseWaterContent = baseWaterContent * waterDemandFactor;
+            const waterContent = Math.round(baseWaterContent * (1 - waterReduction / 100));
+
+            const totalCementitious = Math.round(waterContent / wcRatio);
+            const finalTotalCementitious = Math.max(totalCementitious, 320);
+
+            const scmWeight = finalTotalCementitious * (totalSCMPercent / 100);
+            const opcWeight = finalTotalCementitious - scmWeight;
+
+            const actualWC = Math.round((waterContent / finalTotalCementitious) * 100) / 100;
+
+            let cementVolume = opcWeight / (cementSG * 1000);
+            
+            scmComposition.forEach(scm => {
+                const scmAmount = finalTotalCementitious * (scm.percent / 100);
+                cementVolume += scmAmount / (scm.sg * 1000);
+            });
+
+            const waterVolume = waterContent / 1000;
+            const entrappedAir = airContent;
+
+            const aggregateVolume = 1 - cementVolume - waterVolume - entrappedAir;
+
+            const fineAggVolume = aggregateVolume * fineAggPercent;
+            const coarseAggVolume = aggregateVolume * (1 - fineAggPercent);
+
+            const fineAggWeight = Math.round(fineAggVolume * fineSG * 1000);
+            const coarseAggWeight = Math.round(coarseAggVolume * coarseSG * 1000);
+
+            const concreteTypeInfo = determineConcreteType({
+                strength: targetStrength,
+                wcRatio: actualWC,
+                slump: slump,
+                hasSilicaFume: useSilicaFume,
+                hasVMA: useVMA,
+                totalSCM: totalSCMPercent,
+                placement: placement,
+                useSP: useSuperplasticizer
+            });
+
+            const typeBadge = document.getElementById('concreteTypeBadge');
+            typeBadge.textContent = concreteTypeInfo.type.toUpperCase();
+            typeBadge.className = `concrete-type-badge ${concreteTypeInfo.className}`;
+
+            const typeDetails = document.getElementById('concreteTypeDetails');
+            typeDetails.innerHTML = `
+                <p><strong>Type:</strong> ${concreteTypeInfo.type}</p>
+                <p><strong>Description:</strong> ${concreteTypeInfo.description}</p>
+                <p><strong>Typical Applications:</strong> ${concreteTypeInfo.applications}</p>
+                <p><strong>Key Characteristics:</strong> ${concreteTypeInfo.characteristics}</p>
+            `;
+
+            const cementProp = 1;
+            const fineProp = Math.round((fineAggWeight / finalTotalCementitious) * 10) / 10;
+            const coarseProp = Math.round((coarseAggWeight / finalTotalCementitious) * 10) / 10;
+
+            document.getElementById('cementResult').textContent = Math.round(opcWeight);
+            document.getElementById('totalCementResult').textContent = finalTotalCementitious;
+            document.getElementById('waterResult').textContent = waterContent;
+            document.getElementById('fineResult').textContent = fineAggWeight;
+            document.getElementById('coarseResult').textContent = coarseAggWeight;
+            document.getElementById('wcRatio').textContent = actualWC;
+            document.getElementById('mixStrength').textContent = Math.round(targetStrength + 1.65 * stdDev);
+
+            if (scmComposition.length > 0) {
+                document.getElementById('scmResultItem').style.display = 'block';
+                document.getElementById('scmResultLabel').textContent = 'Total SCM';
+                document.getElementById('scmResult').textContent = Math.round(scmWeight);
+                
+                document.getElementById('scmResults').style.display = 'block';
+                let scmHTML = `<p><strong>Total SCM Replacement: ${totalSCMPercent}%</strong> (${Math.round(scmWeight)} kg/m³)</p>`;
+                
+                scmComposition.forEach(scm => {
+                    const scmAmount = Math.round(finalTotalCementitious * (scm.percent / 100));
+                    scmHTML += `<p><strong>${scm.name}:</strong> ${scm.percent}% = ${scmAmount} kg/m³<br>`;
+                    scmHTML += `<em>${scm.benefits}</em></p>`;
+                });
+                
+                document.getElementById('scmDetails').innerHTML = scmHTML;
+            } else {
+                document.getElementById('scmResultItem').style.display = 'none';
+                document.getElementById('scmResults').style.display = 'none';
+            }
+
+            const fineAggType = document.getElementById('fineAggType').value;
+            const useQuarryDust = document.getElementById('useQuarryDust').checked;
+            const useStoneDust = document.getElementById('useStoneDust').checked;
+
+            if (fineAggType !== 'natural' || useQuarryDust || useStoneDust) {
+                document.getElementById('fineAggResults').style.display = 'block';
+                let fineAggHTML = '<p><strong>Fine Aggregate Composition:</strong></p>';
+                
+                let remaining = 100;
+                if (useQuarryDust) {
+                    const percent = parseFloat(document.getElementById('quarryDustPercent').value);
+                    const amount = Math.round(fineAggWeight * percent / 100);
+                    fineAggHTML += `<p>• Quarry Dust: ${percent}% = ${amount} kg/m³</p>`;
+                    remaining -= percent;
+                }
+                if (useStoneDust) {
+                    const percent = parseFloat(document.getElementById('stoneDustPercent').value);
+                    const amount = Math.round(fineAggWeight * percent / 100);
+                    fineAggHTML += `<p>• Stone Dust: ${percent}% = ${amount} kg/m³</p>`;
+                    remaining -= percent;
+                }
+                
+                const primaryAmount = Math.round(fineAggWeight * remaining / 100);
+                const primaryType = fineAggType === 'natural' ? 'Natural Sand' : 
+                                   fineAggType === 'msand' ? 'Manufactured Sand (M-Sand)' :
+                                   'Mixed Sand (Natural + M-Sand)';
+                fineAggHTML += `<p>• ${primaryType}: ${remaining}% = ${primaryAmount} kg/m³</p>`;
+                
+                document.getElementById('fineAggDetails').innerHTML = fineAggHTML;
+            } else {
+                document.getElementById('fineAggResults').style.display = 'none';
+            }
+
+            let admixtureList = [];
+            if (useSuperplasticizer) {
+                const spType = document.getElementById('superplasticizerType').value;
+                const dosage = document.getElementById('superplasticizerDosage').value;
+                const spDosage = Math.round(finalTotalCementitious * volume * dosage / 100 * 100) / 100;
+                
+                let spName = spType === 'PCE' ? 'PCE-based Superplasticizer' : 
+                            spType === 'SNF' ? 'SNF-based Superplasticizer' : 
+                            spType === 'SMF' ? 'SMF-based Superplasticizer' :
+                            'Lignosulfonate-based Plasticizer';
+                
+                admixtureList.push(`<p><strong>${spName}:</strong> ${dosage}% by cementitious weight = ${spDosage} kg (for ${volume} m³)<br>
+                                   <em>Effect: ${waterReduction}% water reduction, improved workability, reduced W/C ratio</em></p>`);
+            }
+            
+            if (useAirEntraining) {
+                const airPercent = parseFloat(document.getElementById('airContent').value);
+                admixtureList.push(`<p><strong>Air-Entraining Agent:</strong> Target air content ${airPercent.toFixed(1)}%<br>
+                                   <em>Effect: Improved freeze-thaw resistance, enhanced workability, increased durability</em></p>`);
+            }
+            
+            if (document.getElementById('useRetarder').checked) {
+                const retarderDosage = parseFloat(document.getElementById('retarderDosage').value);
+                const retarderAmount = Math.round(finalTotalCementitious * volume * retarderDosage / 100 * 100) / 100;
+                admixtureList.push(`<p><strong>Retarder:</strong> ${retarderDosage}% by cementitious weight = ${retarderAmount} kg (for ${volume} m³)<br>
+                                   <em>Effect: Delayed setting time 2-4 hours, reduced heat of hydration (useful in hot weather)</em></p>`);
+            }
+            
+            if (document.getElementById('useAccelerator').checked) {
+                const acceleratorDosage = parseFloat(document.getElementById('acceleratorDosage').value);
+                const acceleratorAmount = Math.round(finalTotalCementitious * volume * acceleratorDosage / 100 * 100) / 100;
+                admixtureList.push(`<p><strong>Accelerator:</strong> ${acceleratorDosage}% by cementitious weight = ${acceleratorAmount} kg (for ${volume} m³)<br>
+                                   <em>Effect: Faster setting and early strength gain (useful in cold weather)</em></p>`);
+            }
+            
+            if (document.getElementById('useWaterproofing').checked) {
+                const waterproofingDosage = parseFloat(document.getElementById('waterproofingDosage').value);
+                const waterproofingAmount = Math.round(finalTotalCementitious * volume * waterproofingDosage / 100 * 100) / 100;
+                admixtureList.push(`<p><strong>Waterproofing Agent:</strong> ${waterproofingDosage}% by cementitious weight = ${waterproofingAmount} kg (for ${volume} m³)<br>
+                                   <em>Effect: Reduced permeability, enhanced durability, water resistance</em></p>`);
+            }
+
+            if (useVMA) {
+                const vmaDosage = parseFloat(document.getElementById('viscosityDosage').value);
+                const vmaAmount = Math.round(finalTotalCementitious * volume * vmaDosage / 100 * 1000) / 1000;
+                admixtureList.push(`<p><strong>Viscosity Modifying Agent (VMA):</strong> ${vmaDosage}% by cementitious weight = ${vmaAmount} kg (for ${volume} m³)<br>
+                                   <em>Effect: Improved cohesion, reduced segregation, better for SCC</em></p>`);
+            }
+
+            if (admixtureList.length > 0) {
+                document.getElementById('admixtureResults').style.display = 'block';
+                document.getElementById('admixtureDetails').innerHTML = admixtureList.join('');
+            } else {
+                document.getElementById('admixtureResults').style.display = 'none';
+            }
+
+            let proportionBreakdown = `Cement (OPC): ${cementProp}`;
+            if (scmComposition.length > 0) {
+                proportionBreakdown += ` + SCM: ${Math.round((scmWeight/opcWeight) * 10) / 10}`;
+            }
+            proportionBreakdown += ` : Fine Agg: ${fineProp} : Coarse Agg: ${coarseProp}`;
+            
+            document.getElementById('proportions').textContent = `${cementProp} : ${fineProp} : ${coarseProp}`;
+            document.getElementById('proportionBreakdown').textContent = proportionBreakdown;
+
+            document.getElementById('volumeDisplay').textContent = volume;
+            let quantitiesText = `<strong>OPC Cement:</strong> ${Math.round(opcWeight * volume)} kg`;
+            
+            if (scmComposition.length > 0) {
+                quantitiesText += ` | <strong>SCM:</strong> ${Math.round(scmWeight * volume)} kg`;
+            }
+            
+            quantitiesText += ` | <strong>Total Cementitious:</strong> ${Math.round(finalTotalCementitious * volume)} kg<br>`;
+            quantitiesText += `<strong>Water:</strong> ${Math.round(waterContent * volume)} liters | `;
+            quantitiesText += `<strong>Fine Aggregate:</strong> ${Math.round(fineAggWeight * volume)} kg | `;
+            quantitiesText += `<strong>Coarse Aggregate:</strong> ${Math.round(coarseAggWeight * volume)} kg`;
+            
+            document.getElementById('totalQuantities').innerHTML = quantitiesText;
+
+            if (scmComposition.length > 0) {
+                document.getElementById('sustainabilityInfo').style.display = 'block';
+                const co2Reduction = Math.round(scmWeight * volume * 0.85);
+                const sustainText = `By using ${totalSCMPercent}% SCM replacement (${Math.round(scmWeight * volume)} kg), you save approximately ` +
+                                   `<strong>${co2Reduction} kg of CO₂</strong> emissions for ${volume} m³ of concrete. ` +
+                                   `This promotes sustainable construction and reduces environmental impact while maintaining or improving concrete performance.`;
+                document.getElementById('sustainabilityDetails').innerHTML = sustainText;
+            } else {
+                document.getElementById('sustainabilityInfo').style.display = 'none';
+            }
+
+            document.getElementById('resultsCard').style.display = 'block';
+            
+            // Only scroll to results if explicitly requested (button click)
+            if (shouldScroll) {
+                setTimeout(() => {
+                    document.getElementById('resultsCard').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }, 100);
+            }
+        }
+
+        window.addEventListener('load', function() {
+            // Initialize all slider values on page load
+            updateSliderValue('flyAsh');
+            updateSliderValue('ggbs');
+            updateSliderValue('silicaFume');
+            updateSliderValue('metakaolin');
+            updateSliderValue('rha');
+            updateSliderValue('quarryDust');
+            updateSliderValue('stoneDust');
+            updateSliderValue('superplasticizer');
+            updateSliderValue('retarder');
+            updateSliderValue('accelerator');
+            updateSliderValue('airContent');
+            updateSliderValue('waterproofing');
+            updateSliderValue('viscosity');
+            
+            updateFromGrade();
+            calculateMix(false);
+        });
+    </script>
+</body>
+</html>
