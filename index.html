@@ -1026,12 +1026,118 @@
             transform: translateY(-1px);
         }
 
+        /* Print Report Styles */
+        .print-report {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: white;
+            z-index: 10000;
+            overflow-y: auto;
+            padding: 40px;
+        }
+        
+        .print-report.active {
+            display: block;
+        }
+        
+        .print-report-content {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        
+        .report-header {
+            text-align: center;
+            border-bottom: 3px solid #6366f1;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .report-section {
+            margin-bottom: 30px;
+            page-break-inside: avoid;
+        }
+        
+        .report-section h2 {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+        
+        .report-section h3 {
+            color: #6366f1;
+            margin: 15px 0 10px 0;
+            font-size: 1.1rem;
+            border-bottom: 2px solid #e0e7ff;
+            padding-bottom: 5px;
+        }
+        
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        
+        .report-table th {
+            background: #f3f4f6;
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ddd;
+            font-weight: 600;
+        }
+        
+        .report-table td {
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+        
+        .report-table tr:nth-child(even) {
+            background: #f9fafb;
+        }
+        
+        .close-report-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #ef4444;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            z-index: 10001;
+        }
+        
+        .print-btn {
+            position: fixed;
+            top: 20px;
+            right: 140px;
+            background: #6366f1;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            z-index: 10001;
+        }
+
         /* Print styles */
         @media print {
             body {
                 background: white !important;
             }
-            .preset-buttons, .action-buttons, footer {
+            .preset-buttons, .action-buttons, footer, .close-report-btn, .print-btn {
                 display: none !important;
             }
             .card {
@@ -1042,20 +1148,38 @@
             .dashboard {
                 display: block !important;
             }
+            .print-report {
+                display: block !important;
+                position: relative !important;
+                padding: 0 !important;
+            }
+            .print-report-content {
+                box-shadow: none !important;
+                padding: 0 !important;
+            }
+            .report-section {
+                page-break-inside: avoid;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>🏗️ Advanced Concrete Mix Design Dashboard</h1>
-            <p>Professional Mix Design with SCMs, Fine Aggregate Alternatives & Chemical Admixtures</p>
+            <div style="display: flex; align-items: center; justify-content: center; gap: 20px; margin-bottom: 15px;">
+                <img src="mono.png" alt="Logo" style="height: 80px; filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));">
+                <div>
+                    <h1 style="margin: 0;">🏗️ Advanced Concrete Mix Design Dashboard</h1>
+                    <p style="margin: 8px 0 0 0;">Professional Mix Design with SCMs, Fine Aggregate Alternatives & Chemical Admixtures</p>
+                </div>
+            </div>
             
             <div class="action-buttons" style="display: flex; gap: 12px; justify-content: center; margin-top: 20px; flex-wrap: wrap;">
                 <button class="action-btn" onclick="saveMix()" style="background: linear-gradient(135deg, #4caf50, #388e3c); color: white; padding: 12px 28px; border: none; border-radius: 25px; font-weight: 600; cursor: pointer; font-size: 0.95rem;">💾 Save Mix</button>
                 <button class="action-btn" onclick="loadMix()" style="background: linear-gradient(135deg, #2196f3, #1565c0); color: white; padding: 12px 28px; border: none; border-radius: 25px; font-weight: 600; cursor: pointer; font-size: 0.95rem;">📂 Load Mix</button>
                 <button class="action-btn" onclick="compareMix()" style="background: linear-gradient(135deg, #ff9800, #f57c00); color: white; padding: 12px 28px; border: none; border-radius: 25px; font-weight: 600; cursor: pointer; font-size: 0.95rem;">⚖️ Compare</button>
-                <button class="action-btn" onclick="exportToPDF()" style="background: linear-gradient(135deg, #e91e63, #c2185b); color: white; padding: 12px 28px; border: none; border-radius: 25px; font-weight: 600; cursor: pointer; font-size: 0.95rem;">📄 Export PDF</button>
+                <button class="action-btn" onclick="printReport()" style="background: linear-gradient(135deg, #e91e63, #c2185b); color: white; padding: 12px 28px; border: none; border-radius: 25px; font-weight: 600; cursor: pointer; font-size: 0.95rem;">📄 Print Report</button>
+                <button class="action-btn" onclick="exportToPDF()" style="background: linear-gradient(135deg, #673ab7, #512da8); color: white; padding: 12px 28px; border: none; border-radius: 25px; font-weight: 600; cursor: pointer; font-size: 0.95rem;">📥 Export PDF</button>
                 <button class="action-btn" onclick="generateQR()" style="background: linear-gradient(135deg, #9c27b0, #7b1fa2); color: white; padding: 12px 28px; border: none; border-radius: 25px; font-weight: 600; cursor: pointer; font-size: 0.95rem;">📱 Share QR</button>
             </div>
         </header>
@@ -3945,6 +4069,331 @@
             
             return schedule;
         }
+
+        // ========== PRINT REPORT FUNCTION ==========
+        function printReport() {
+            // First calculate the mix to ensure results are up-to-date
+            calculateMix(false);
+            
+            // Get report container or create it
+            let reportContainer = document.getElementById('printReportContainer');
+            if (!reportContainer) {
+                reportContainer = document.createElement('div');
+                reportContainer.id = 'printReportContainer';
+                reportContainer.className = 'print-report';
+                document.body.appendChild(reportContainer);
+            }
+            
+            // Generate report content
+            const reportHTML = generateReportHTML();
+            reportContainer.innerHTML = reportHTML;
+            
+            // Show the report
+            reportContainer.classList.add('active');
+        }
+        
+        function closeReport() {
+            const reportContainer = document.getElementById('printReportContainer');
+            if (reportContainer) {
+                reportContainer.classList.remove('active');
+            }
+        }
+        
+        function printReportNow() {
+            window.print();
+        }
+        
+        function generateReportHTML() {
+            const date = new Date().toLocaleString();
+            
+            // Get all input values
+            const grade = document.getElementById('concreteGrade').value;
+            const targetStrength = grade === 'custom' ? document.getElementById('targetStrength').value : grade;
+            const exposure = document.getElementById('exposure').value;
+            const placement = document.getElementById('placementType').value;
+            const slump = document.getElementById('slump').value;
+            const cementType = document.getElementById('cementType').value;
+            const cementSG = document.getElementById('cementSG').value;
+            const fineAggType = document.getElementById('fineAggType').value;
+            const fineSG = document.getElementById('fineSG').value;
+            const coarseSG = document.getElementById('coarseSG').value;
+            const maxAggSize = document.getElementById('maxAggSize').value;
+            const fineAggPercent = (parseFloat(document.getElementById('fineAggPercent').value) * 100).toFixed(0);
+            const coarseAggPercent = (100 - parseFloat(fineAggPercent)).toFixed(0);
+            
+            // Get SCM details
+            const useFlyAsh = document.getElementById('useFlyAsh').checked;
+            const useGGBS = document.getElementById('useGGBS').checked;
+            const useSilicaFume = document.getElementById('useSilicaFume').checked;
+            const useMetakaolin = document.getElementById('useMetakaolin').checked;
+            const useRHA = document.getElementById('useRHA').checked;
+            
+            // Get admixture details
+            const useSuperplasticizer = document.getElementById('useSuperplasticizer').checked;
+            const useAirEntraining = document.getElementById('useAirEntraining').checked;
+            const useRetarder = document.getElementById('useRetarder').checked;
+            const useAccelerator = document.getElementById('useAccelerator').checked;
+            const useViscosity = document.getElementById('useViscosity').checked;
+            const useFoamAgent = document.getElementById('useFoamAgent').checked;
+            const useFibers = document.getElementById('useFibers').checked;
+            const useWaterproofing = document.getElementById('useWaterproofing').checked;
+            
+            // Get results
+            const opcResult = document.getElementById('cementResult').textContent;
+            const totalCementResult = document.getElementById('totalCementResult').textContent;
+            const waterResult = document.getElementById('waterResult').textContent;
+            const fineResult = document.getElementById('fineResult').textContent;
+            const coarseResult = document.getElementById('coarseResult').textContent;
+            const wcRatio = document.getElementById('wcRatio').textContent;
+            const mixStrength = document.getElementById('mixStrength').textContent;
+            const concreteType = document.getElementById('concreteTypeBadge').textContent;
+            
+            let scmRows = '';
+            if (useFlyAsh) {
+                const percent = document.getElementById('flyAshPercent').value;
+                const type = document.getElementById('flyAshClass').value;
+                scmRows += `<tr><td>Fly Ash (${type === 'classF' ? 'Class F' : 'Class C'})</td><td>${percent}%</td></tr>`;
+            }
+            if (useGGBS) {
+                const percent = document.getElementById('ggbsPercent').value;
+                scmRows += `<tr><td>GGBS (Slag Cement)</td><td>${percent}%</td></tr>`;
+            }
+            if (useSilicaFume) {
+                const percent = document.getElementById('silicaFumePercent').value;
+                scmRows += `<tr><td>Silica Fume</td><td>${percent}%</td></tr>`;
+            }
+            if (useMetakaolin) {
+                const percent = document.getElementById('metakaolinPercent').value;
+                scmRows += `<tr><td>Metakaolin</td><td>${percent}%</td></tr>`;
+            }
+            if (useRHA) {
+                const percent = document.getElementById('rhaPercent').value;
+                scmRows += `<tr><td>Rice Husk Ash</td><td>${percent}%</td></tr>`;
+            }
+            
+            let admixtureRows = '';
+            if (useSuperplasticizer) {
+                const dosage = document.getElementById('superplasticizerDosage').value;
+                admixtureRows += `<tr><td>Superplasticizer (PCE)</td><td>${dosage}% by cement weight</td></tr>`;
+            }
+            if (useAirEntraining) {
+                const content = document.getElementById('airContent').value;
+                admixtureRows += `<tr><td>Air-Entraining Agent</td><td>${content}% air content</td></tr>`;
+            }
+            if (useRetarder) {
+                const dosage = document.getElementById('retarderDosage').value;
+                admixtureRows += `<tr><td>Retarder</td><td>${dosage}% by cement weight</td></tr>`;
+            }
+            if (useAccelerator) {
+                const dosage = document.getElementById('acceleratorDosage').value;
+                admixtureRows += `<tr><td>Accelerator</td><td>${dosage}% by cement weight</td></tr>`;
+            }
+            if (useViscosity) {
+                const dosage = document.getElementById('viscosityDosage').value;
+                admixtureRows += `<tr><td>Viscosity Modifying Agent</td><td>${dosage}% by cement weight</td></tr>`;
+            }
+            if (useFoamAgent) {
+                const dosage = document.getElementById('foamAgentDosage').value;
+                const density = document.getElementById('foamDensity').value;
+                admixtureRows += `<tr><td>Foaming Agent</td><td>${dosage}% (Target density: ${density} kg/m³)</td></tr>`;
+            }
+            if (useFibers) {
+                const type = document.getElementById('fiberType').value;
+                const dosage = document.getElementById('fiberDosage').value;
+                admixtureRows += `<tr><td>Fibers (${type})</td><td>${dosage} kg/m³</td></tr>`;
+            }
+            if (useWaterproofing) {
+                const dosage = document.getElementById('waterproofingDosage').value;
+                admixtureRows += `<tr><td>Waterproofing Agent</td><td>${dosage}% by cement weight</td></tr>`;
+            }
+            
+            return `
+                <button class="close-report-btn" onclick="closeReport()">✕ Close</button>
+                <button class="print-btn" onclick="printReportNow()">🖨️ Print/Save as PDF</button>
+                
+                <div class="print-report-content">
+                    <div class="report-header">
+                        <img src="mono.png" alt="Logo" style="height: 100px; margin-bottom: 15px;">
+                        <h1 style="color: #6366f1; margin: 10px 0;">Concrete Mix Design Report</h1>
+                        <p style="font-size: 1.1rem; color: #666;">Quaid-e-Awam University of Engineering, Science & Technology</p>
+                        <p style="color: #888; margin-top: 10px;">Generated: ${date}</p>
+                    </div>
+                    
+                    <div class="report-section">
+                        <h2>📋 Project Information</h2>
+                        <table class="report-table">
+                            <tr>
+                                <th>Parameter</th>
+                                <th>Value</th>
+                            </tr>
+                            <tr>
+                                <td><strong>Concrete Type</strong></td>
+                                <td><strong style="color: #6366f1;">${concreteType}</strong></td>
+                            </tr>
+                            <tr>
+                                <td>Target Strength Grade</td>
+                                <td>M${targetStrength} (${targetStrength} MPa)</td>
+                            </tr>
+                            <tr>
+                                <td>Exposure Condition</td>
+                                <td>${exposure.charAt(0).toUpperCase() + exposure.slice(1)}</td>
+                            </tr>
+                            <tr>
+                                <td>Placement Type</td>
+                                <td>${placement === 'normal' ? 'Normal' : placement === 'scc' ? 'Self-Compacting' : placement === 'underwater' ? 'Underwater' : 'Shotcrete'}</td>
+                            </tr>
+                            <tr>
+                                <td>Required Slump</td>
+                                <td>${slump} mm</td>
+                            </tr>
+                        </table>
+                    </div>
+                    
+                    <div class="report-section">
+                        <h2>🔨 Materials Specification</h2>
+                        <h3>Cement</h3>
+                        <table class="report-table">
+                            <tr>
+                                <th>Material</th>
+                                <th>Specification</th>
+                            </tr>
+                            <tr>
+                                <td>Cement Type</td>
+                                <td>${cementType === 'opc43' ? 'OPC 43 Grade' : cementType === 'opc53' ? 'OPC 53 Grade' : cementType === 'ppc' ? 'Portland Pozzolana Cement (PPC)' : cementType === 'psc' ? 'Portland Slag Cement (PSC)' : cementType === 'srpc' ? 'Sulfate Resistant Portland Cement (SRPC)' : 'White Portland Cement'}</td>
+                            </tr>
+                            <tr>
+                                <td>Specific Gravity</td>
+                                <td>${cementSG}</td>
+                            </tr>
+                        </table>
+                        
+                        ${scmRows ? `<h3>Supplementary Cementitious Materials (SCMs)</h3>
+                        <table class="report-table">
+                            <tr>
+                                <th>SCM Type</th>
+                                <th>Replacement %</th>
+                            </tr>
+                            ${scmRows}
+                        </table>` : ''}
+                        
+                        <h3>Aggregates</h3>
+                        <table class="report-table">
+                            <tr>
+                                <th>Aggregate Type</th>
+                                <th>Specification</th>
+                            </tr>
+                            <tr>
+                                <td>Fine Aggregate</td>
+                                <td>${fineAggType === 'natural' ? 'Natural River Sand' : fineAggType === 'msand' ? 'Manufactured Sand (M-Sand)' : fineAggType === 'mixed' ? 'Mixed (Natural + M-Sand)' : 'Crushed Stone Sand'}</td>
+                            </tr>
+                            <tr>
+                                <td>Fine Aggregate SG</td>
+                                <td>${fineSG}</td>
+                            </tr>
+                            <tr>
+                                <td>Coarse Aggregate SG</td>
+                                <td>${coarseSG}</td>
+                            </tr>
+                            <tr>
+                                <td>Maximum Aggregate Size</td>
+                                <td>${maxAggSize} mm</td>
+                            </tr>
+                            <tr>
+                                <td>Fine Aggregate %</td>
+                                <td>${fineAggPercent}%</td>
+                            </tr>
+                            <tr>
+                                <td>Coarse Aggregate %</td>
+                                <td>${coarseAggPercent}%</td>
+                            </tr>
+                        </table>
+                        
+                        ${admixtureRows ? `<h3>Chemical Admixtures</h3>
+                        <table class="report-table">
+                            <tr>
+                                <th>Admixture Type</th>
+                                <th>Dosage</th>
+                            </tr>
+                            ${admixtureRows}
+                        </table>` : ''}
+                    </div>
+                    
+                    <div class="report-section">
+                        <h2>📊 Mix Design Results (per m³)</h2>
+                        <table class="report-table">
+                            <tr>
+                                <th>Material</th>
+                                <th>Quantity (kg/m³)</th>
+                            </tr>
+                            <tr style="background: #fef3c7;">
+                                <td><strong>OPC (Ordinary Portland Cement)</strong></td>
+                                <td><strong>${opcResult} kg</strong></td>
+                            </tr>
+                            <tr style="background: #fef3c7;">
+                                <td><strong>Total Cementitious Materials</strong></td>
+                                <td><strong>${totalCementResult} kg</strong></td>
+                            </tr>
+                            <tr style="background: #dbeafe;">
+                                <td><strong>Water</strong></td>
+                                <td><strong>${waterResult} kg</strong></td>
+                            </tr>
+                            <tr>
+                                <td>Fine Aggregate (Sand)</td>
+                                <td>${fineResult} kg</td>
+                            </tr>
+                            <tr>
+                                <td>Coarse Aggregate</td>
+                                <td>${coarseResult} kg</td>
+                            </tr>
+                        </table>
+                        
+                        <h3>Key Mix Parameters</h3>
+                        <table class="report-table">
+                            <tr>
+                                <th>Parameter</th>
+                                <th>Value</th>
+                            </tr>
+                            <tr>
+                                <td><strong>Water-Cement Ratio (W/C)</strong></td>
+                                <td><strong>${wcRatio}</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Mix Strength (with safety factor)</strong></td>
+                                <td><strong>${mixStrength} MPa</strong></td>
+                            </tr>
+                            <tr>
+                                <td>Cement : Fine Agg : Coarse Agg (by weight)</td>
+                                <td>1 : ${(fineResult / totalCementResult).toFixed(2)} : ${(coarseResult / totalCementResult).toFixed(2)}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    
+                    <div class="report-section">
+                        <h2>⚠️ Important Notes</h2>
+                        <ul style="line-height: 2; color: #555;">
+                            <li><strong>Trial Mixes Required:</strong> This is a preliminary design. Conduct trial mixes for verification.</li>
+                            <li><strong>Material Quality:</strong> Ensure all materials meet relevant standards (ASTM/IS/BS).</li>
+                            <li><strong>Aggregate Moisture:</strong> Adjust water content based on aggregate moisture and absorption.</li>
+                            <li><strong>Curing:</strong> Proper curing is essential, especially with SCMs (minimum 7 days for normal, 14+ days with SCMs).</li>
+                            <li><strong>Quality Control:</strong> Regular testing of materials and concrete strength is mandatory.</li>
+                            <li><strong>Standards Compliance:</strong> Based on ACI 211.1, IS 456, IS 10262, and relevant codes.</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="report-section">
+                        <h2>👨‍🔬 Developed By</h2>
+                        <p style="text-align: center; line-height: 1.8; color: #555;">
+                            <strong>Dr. Riaz Bhanbhro</strong> | <strong>Dr. Mahboob Oad</strong> | <strong>Dr. Muneeb Memon</strong><br>
+                            <strong>Department of Civil Engineering</strong><br>
+                            Quaid-e-Awam University of Engineering, Science & Technology (QUEST)<br>
+                            Nawabshah, Sindh, Pakistan<br>
+                            © 2025 QUEST - All Rights Reserved
+                        </p>
+                    </div>
+                </div>
+            `;
+        }
+        // ========== END PRINT REPORT FUNCTION ==========
 
         window.addEventListener('load', function() {
             // Clear all checkboxes on page load (prevent browser auto-fill)
