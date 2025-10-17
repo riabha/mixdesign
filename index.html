@@ -1060,26 +1060,30 @@
             </div>
         </header>
 
-        <!-- Quick Presets -->
-        <div class="preset-buttons">
-            <button class="preset-btn" onclick="loadPreset('normal')">🏢 Normal</button>
-            <button class="preset-btn" onclick="loadPreset('hpc')">⚡ High-Performance</button>
-            <button class="preset-btn" onclick="loadPreset('uhpc')">💎 Ultra-High</button>
-            <button class="preset-btn" onclick="loadPreset('scc')">🌊 Self-Compacting</button>
-            <button class="preset-btn" onclick="loadPreset('mass')">🏔️ Mass</button>
-            <button class="preset-btn" onclick="loadPreset('marine')">🌊 Marine</button>
-            <button class="preset-btn" onclick="loadPreset('foam')">🫧 Foam</button>
-            <button class="preset-btn" onclick="loadPreset('fiber')">🧵 Fiber Reinforced</button>
-            <button class="preset-btn" onclick="loadPreset('geopolymer')">♻️ Geopolymer</button>
-            <button class="preset-btn" onclick="loadPreset('pervious')">💧 Pervious</button>
-            <button class="preset-btn" onclick="loadPreset('lightweight')">🪶 Lightweight</button>
-            <button class="preset-btn" onclick="loadPreset('recycled')">♻️ Recycled Aggregate</button>
-        </div>
-
         <div class="dashboard">
             <!-- Concrete Type Selection -->
             <div class="card preset-card">
                 <h2>🎯 Concrete Type & Strength</h2>
+                
+                <div class="form-group">
+                    <label>🎯 Quick Preset Type</label>
+                    <select id="presetType" onchange="loadPreset(this.value)" style="background: #f0f9ff; color: #1e40af; border: 2px solid #667eea; font-weight: 700; padding: 10px;">
+                        <option value="" style="color: #666;">-- Select Concrete Type --</option>
+                        <option value="normal" style="color: #1e40af;">🏢 Normal Concrete</option>
+                        <option value="hpc" style="color: #1e40af;">⚡ High-Performance (HPC)</option>
+                        <option value="uhpc" style="color: #1e40af;">💎 Ultra-High Performance (UHPC)</option>
+                        <option value="scc" style="color: #1e40af;">🌊 Self-Compacting (SCC)</option>
+                        <option value="mass" style="color: #1e40af;">🏔️ Mass Concrete</option>
+                        <option value="marine" style="color: #1e40af;">🌊 Marine Concrete</option>
+                        <option value="foam" style="color: #1e40af;">🫧 Foam Concrete</option>
+                        <option value="fiber" style="color: #1e40af;">🧵 Fiber Reinforced</option>
+                        <option value="geopolymer" style="color: #1e40af;">♻️ Geopolymer</option>
+                        <option value="pervious" style="color: #1e40af;">💧 Pervious Concrete</option>
+                        <option value="lightweight" style="color: #1e40af;">🪶 Lightweight</option>
+                        <option value="recycled" style="color: #1e40af;">♻️ Recycled Aggregate</option>
+                    </select>
+                </div>
+                
                 <div class="form-group">
                     <label>Concrete Grade</label>
                     <select id="concreteGrade" onchange="updateFromGrade()">
@@ -1592,9 +1596,10 @@
                 </div>
             </div>
 
-            <!-- Weather & Temperature -->
+            <!-- Weather & Aesthetic Properties (Combined) -->
             <div class="card" style="border: 2px solid #ff9800;">
-                <h2 style="background: linear-gradient(90deg, #ff9800, #f57c00); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; border-image: linear-gradient(90deg, #ff9800, #f57c00) 1;">🌡️ Weather Conditions</h2>
+                <h2 style="background: linear-gradient(90deg, #ff9800, #e91e63); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; border-image: linear-gradient(90deg, #ff9800, #e91e63) 1;">🌡️🎨 Weather & Aesthetics</h2>
+                
                 <div class="form-group">
                     <label>Ambient Temperature (°C)</label>
                     <div style="margin: 15px 0;">
@@ -1602,6 +1607,7 @@
                     </div>
                     <span class="slider-value" id="ambientTempValue" style="background: linear-gradient(135deg, #ff9800, #f57c00);">25°C</span>
                 </div>
+                
                 <div class="form-group">
                     <label>Weather Condition</label>
                     <select id="weatherCondition" onchange="calculateMix(false)">
@@ -1612,15 +1618,72 @@
                         <option value="windy">Windy/Dry</option>
                     </select>
                 </div>
+                
                 <div id="weatherWarning" style="display: none;" class="warning-box"></div>
+                
+                <div class="checkbox-group">
+                    <input type="checkbox" id="useWhiteCement" onchange="calculateMix(false)">
+                    <label for="useWhiteCement">White Cement (for colored concrete)</label>
+                </div>
+                
+                <div class="checkbox-group">
+                    <input type="checkbox" id="usePigment" onchange="toggleAdmixture('pigment')">
+                    <label for="usePigment">Add Color Pigment</label>
+                </div>
+                
+                <div id="pigmentOptions" style="display: none; background: #f8f9fa; padding: 15px; border-radius: 10px; margin-top: 10px; border: 2px solid #e91e63;">
+                    <div class="form-group">
+                        <label>Pigment Color</label>
+                        <select id="pigmentColor" onchange="calculateMix(false)">
+                            <option value="red">Red/Terracotta</option>
+                            <option value="yellow">Yellow/Buff</option>
+                            <option value="brown">Brown/Tan</option>
+                            <option value="green">Green</option>
+                            <option value="blue">Blue</option>
+                            <option value="black">Black/Charcoal</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Pigment Dosage (% by cement weight) <span class="label-info">Typical: 2-8%</span></label>
+                        <div style="margin: 15px 0;">
+                            <input type="range" id="pigmentDosage" value="4" step="0.5" min="1" max="10" oninput="updateSliderValue('pigment'); calculateMix(false)" style="width: 100%;">
+                        </div>
+                        <span class="slider-value" id="pigmentValue" style="background: linear-gradient(135deg, #e91e63, #c2185b);">4%</span>
+                    </div>
+                </div>
+                
+                <div class="checkbox-group">
+                    <input type="checkbox" id="useExposedAggregate" onchange="calculateMix(false)">
+                    <label for="useExposedAggregate">Exposed Aggregate Finish</label>
+                </div>
             </div>
 
             <!-- Cost Calculator -->
             <div class="card" style="border: 2px solid #4caf50;">
                 <h2 style="background: linear-gradient(90deg, #4caf50, #388e3c); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; border-image: linear-gradient(90deg, #4caf50, #388e3c) 1;">💰 Cost Calculator</h2>
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px; background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); border-radius: 8px; margin-bottom: 12px;">
+                    <div>
+                        <div style="font-size: 0.75rem; font-weight: 700; color: #2e7d32;">📍 Auto-Update Prices</div>
+                        <div id="priceStatus" style="font-size: 0.65rem; color: #666; margin-top: 2px;">Click update button</div>
+                    </div>
+                    <button onclick="fetchMarketPrices()" style="background: #4caf50; color: white; border: none; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 0.75rem; font-weight: 600;">🔄 Update</button>
+                </div>
+                
+                <div class="form-group">
+                    <label>Location/Region</label>
+                    <select id="location" onchange="fetchMarketPrices()">
+                        <option value="pakistan">Pakistan</option>
+                        <option value="india">India</option>
+                        <option value="usa">United States</option>
+                        <option value="uk">United Kingdom</option>
+                        <option value="uae">UAE</option>
+                    </select>
+                </div>
+                
                 <div class="form-group">
                     <label>OPC Cement Cost (per kg)</label>
-                    <input type="number" id="cementCost" value="8" step="0.5" min="0" onchange="calculateMix(false)">
+                    <input type="number" id="cementCost" value="29" step="0.5" min="0" onchange="calculateMix(false)">
                 </div>
                 <div class="form-group">
                     <label>SCM Cost (per kg) <span class="label-info">Avg for Fly Ash/GGBS</span></label>
@@ -1693,43 +1756,6 @@
                 </div>
                 <button class="btn" onclick="calculateMix(true)">🔬 Calculate Mix Design</button>
                 <button class="btn" onclick="optimizeMix()" style="background: linear-gradient(135deg, #ffa726, #fb8c00); margin-top: 10px;">🎯 Optimize Mix</button>
-            </div>
-
-            <!-- Aesthetic & Color -->
-            <div class="card" style="border: 2px solid #e91e63;">
-                <h2 style="background: linear-gradient(90deg, #e91e63, #c2185b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; border-image: linear-gradient(90deg, #e91e63, #c2185b) 1;">🎨 Aesthetic Properties</h2>
-                <div class="checkbox-group">
-                    <input type="checkbox" id="useWhiteCement" onchange="calculateMix(false)">
-                    <label for="useWhiteCement">White Cement (for colored concrete)</label>
-                </div>
-                <div class="checkbox-group">
-                    <input type="checkbox" id="usePigment" onchange="toggleAdmixture('pigment')">
-                    <label for="usePigment">Add Color Pigment</label>
-                </div>
-                <div id="pigmentOptions" style="display: none; background: #f8f9fa; padding: 15px; border-radius: 10px; margin-top: 10px; border: 2px solid #e91e63;">
-                    <div class="form-group">
-                        <label>Pigment Color</label>
-                        <select id="pigmentColor" onchange="calculateMix(false)">
-                            <option value="red">Red/Terracotta</option>
-                            <option value="yellow">Yellow/Buff</option>
-                            <option value="brown">Brown/Tan</option>
-                            <option value="green">Green</option>
-                            <option value="blue">Blue</option>
-                            <option value="black">Black/Charcoal</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Pigment Dosage (% by cement weight) <span class="label-info">Typical: 2-8%</span></label>
-                        <div style="margin: 15px 0;">
-                            <input type="range" id="pigmentDosage" value="4" step="0.5" min="1" max="10" oninput="updateSliderValue('pigment'); calculateMix(false)" style="width: 100%;">
-                        </div>
-                        <span class="slider-value" id="pigmentValue" style="background: linear-gradient(135deg, #e91e63, #c2185b);">4%</span>
-                    </div>
-                </div>
-                <div class="checkbox-group">
-                    <input type="checkbox" id="useExposedAggregate" onchange="calculateMix(false)">
-                    <label for="useExposedAggregate">Exposed Aggregate Finish</label>
-                </div>
             </div>
 
             <!-- Results -->
@@ -1926,35 +1952,104 @@
     </div>
 
     <script>
-        // [JAVASCRIPT CODE - Same as before, starting from preset loading functions]
+        // Market Prices Database (Location-based pricing)
+        const marketPrices = {
+            pakistan: {
+                name: 'Pakistan',
+                currency: '₨',
+                cement: 29,      // PKR per kg (1450 PKR per 50kg bag)
+                scm: 6,          // PKR per kg
+                fineAgg: 2.5,    // PKR per kg
+                coarseAgg: 2.0,  // PKR per kg
+                admixture: 300   // PKR per kg
+            },
+            india: {
+                name: 'India',
+                currency: '₹',
+                cement: 8,       // INR per kg
+                scm: 1.6,        // INR per kg
+                fineAgg: 1.8,    // INR per kg
+                coarseAgg: 1.5,  // INR per kg
+                admixture: 240   // INR per kg
+            },
+            usa: {
+                name: 'United States',
+                currency: '$',
+                cement: 0.17,    // USD per kg
+                scm: 0.05,       // USD per kg
+                fineAgg: 0.04,   // USD per kg
+                coarseAgg: 0.03, // USD per kg
+                admixture: 3.6   // USD per kg
+            },
+            uk: {
+                name: 'United Kingdom',
+                currency: '£',
+                cement: 0.13,    // GBP per kg
+                scm: 0.04,       // GBP per kg
+                fineAgg: 0.03,   // GBP per kg
+                coarseAgg: 0.025,// GBP per kg
+                admixture: 3.0   // GBP per kg
+            },
+            uae: {
+                name: 'UAE',
+                currency: 'د.إ',
+                cement: 0.44,    // AED per kg
+                scm: 0.12,       // AED per kg
+                fineAgg: 0.12,   // AED per kg
+                coarseAgg: 0.10, // AED per kg
+                admixture: 11    // AED per kg
+            }
+        };
+
+        // Fetch Market Prices
+        function fetchMarketPrices() {
+            const location = document.getElementById('location').value;
+            const prices = marketPrices[location];
+            
+            if (!prices) return;
+
+            document.getElementById('cementCost').value = prices.cement.toFixed(2);
+            document.getElementById('scmCost').value = prices.scm.toFixed(2);
+            document.getElementById('fineAggCost').value = prices.fineAgg.toFixed(2);
+            document.getElementById('coarseAggCost').value = prices.coarseAgg.toFixed(2);
+            document.getElementById('admixtureCost').value = prices.admixture.toFixed(0);
+            document.getElementById('currencySymbol').value = prices.currency;
+            
+            const now = new Date();
+            document.getElementById('priceStatus').innerHTML = `<strong>✓ Updated:</strong> ${prices.name} - ${now.toLocaleTimeString()}`;
+            
+            calculateMix(false);
+        }
+
         // Preset loading functions
         function loadPreset(type) {
-            // Clear ALL checkboxes first (ensures clean slate)
-            document.getElementById('useFlyAsh').checked = false;
-            document.getElementById('useGGBS').checked = false;
-            document.getElementById('useSilicaFume').checked = false;
-            document.getElementById('useMetakaolin').checked = false;
-            document.getElementById('useRHA').checked = false;
-            document.getElementById('useSuperplasticizer').checked = false;
-            document.getElementById('useAirEntraining').checked = false;
-            document.getElementById('useRetarder').checked = false;
-            document.getElementById('useAccelerator').checked = false;
-            document.getElementById('useViscosity').checked = false;
-            document.getElementById('useFoamAgent').checked = false;
-            document.getElementById('useFibers').checked = false;
-            document.getElementById('useWaterproofing').checked = false;
-            document.getElementById('useWhiteCement').checked = false;
-            document.getElementById('usePigment').checked = false;
-            document.getElementById('useExposedAggregate').checked = false;
-            document.getElementById('useRCA').checked = false;
-            document.getElementById('useRecycledBrick').checked = false;
-            document.getElementById('useLightweightAgg').checked = false;
+            if (!type || type === '') return; // Don't load if blank selection
+            
+            // STEP 1: Uncheck ALL checkboxes
+            const allCheckboxes = [
+                'useFlyAsh', 'useGGBS', 'useSilicaFume', 'useMetakaolin', 'useRHA',
+                'useSuperplasticizer', 'useAirEntraining', 'useRetarder', 'useAccelerator',
+                'useViscosity', 'useFoamAgent', 'useFibers', 'useWaterproofing',
+                'useWhiteCement', 'usePigment', 'useExposedAggregate',
+                'useRCA', 'useRecycledBrick', 'useLightweightAgg',
+                'useQuarryDust', 'useStoneDust'
+            ];
+            
+            allCheckboxes.forEach(id => {
+                const checkbox = document.getElementById(id);
+                if (checkbox) checkbox.checked = false;
+            });
 
-            // Hide ALL options divs
-            ['flyAshOptions', 'ggbsOptions', 'silicaFumeOptions', 'metakaolinOptions', 'rhaOptions',
-             'superplasticizerOptions', 'airEntrainingOptions', 'retarderOptions', 'acceleratorOptions',
-             'waterproofingOptions', 'viscosityOptions', 'foamAgentOptions', 'fibersOptions', 'pigmentOptions',
-             'rcaOptions', 'recycledBrickOptions', 'lightweightAggOptions'].forEach(id => {
+            // STEP 2: Hide ALL options divs
+            const allOptionDivs = [
+                'flyAshOptions', 'ggbsOptions', 'silicaFumeOptions', 'metakaolinOptions', 'rhaOptions',
+                'superplasticizerOptions', 'airEntrainingOptions', 'retarderOptions', 'acceleratorOptions',
+                'waterproofingOptions', 'viscosityOptions', 'foamAgentOptions', 'fibersOptions', 'pigmentOptions',
+                'rcaOptions', 'recycledBrickOptions', 'lightweightAggOptions',
+                'quarryDustOptions', 'stoneDustOptions'
+            ];
+            
+            allOptionDivs.forEach(id => {
                 const element = document.getElementById(id);
                 if (element) element.style.display = 'none';
             });
@@ -2047,14 +2142,12 @@
                     break;
 
                 case 'foam':
+                    // STANDARD: Foam concrete = OPC + Foam Agent (fly ash optional, not required)
                     document.getElementById('concreteGrade').value = '10';
                     document.getElementById('exposure').value = 'mild';
                     document.getElementById('slump').value = '175';
-                    document.getElementById('useFlyAsh').checked = true;
                     document.getElementById('useFoamAgent').checked = true;
-                    toggleSCM('flyAsh');
                     toggleAdmixture('foamAgent');
-                    document.getElementById('flyAshPercent').value = '20';
                     document.getElementById('foamDensity').value = '1000';
                     document.getElementById('foamAgentDosage').value = '3';
                     document.getElementById('fineAggPercent').value = '100';
@@ -2101,15 +2194,12 @@
                     break;
 
                 case 'lightweight':
-                    // STANDARD: Lightweight concrete uses lightweight aggregates + possible SCMs
+                    // STANDARD: Lightweight concrete = lightweight aggregates (SCMs optional)
                     document.getElementById('concreteGrade').value = '25';
                     document.getElementById('exposure').value = 'moderate';
                     document.getElementById('slump').value = '125';
-                    document.getElementById('useFlyAsh').checked = true;
                     document.getElementById('useLightweightAgg').checked = true;
-                    toggleSCM('flyAsh');
                     toggleCoarseAggReplacement('lightweightAgg');
-                    document.getElementById('flyAshPercent').value = '20';
                     document.getElementById('lightweightAggPercent').value = '100';
                     document.getElementById('coarseSG').value = '1.60';
                     break;
@@ -2677,13 +2767,37 @@
             const typeBadge = document.getElementById('concreteTypeBadge');
             typeBadge.textContent = concreteTypeInfo.type.toUpperCase();
             typeBadge.className = `concrete-type-badge ${concreteTypeInfo.className}`;
+            
+            console.log('🎯 Detected Concrete Type:', concreteTypeInfo.type);
+            console.log('SCMs used:', { useFlyAsh, useGGBS, useSilicaFume, totalSCM: totalSCMPercent });
+            console.log('Strength:', targetStrength, 'MPa | W/C:', actualWC);
 
             const typeDetails = document.getElementById('concreteTypeDetails');
-            typeDetails.innerHTML = `
-                <p><strong>Type:</strong> ${concreteTypeInfo.type}</p>
+            const selectedPreset = document.getElementById('presetType').value;
+            let presetInfo = '';
+            if (selectedPreset && selectedPreset !== '') {
+                const presetNames = {
+                    'normal': '🏢 Normal Concrete',
+                    'hpc': '⚡ High-Performance (HPC)',
+                    'uhpc': '💎 Ultra-High Performance (UHPC)',
+                    'scc': '🌊 Self-Compacting (SCC)',
+                    'mass': '🏔️ Mass Concrete',
+                    'marine': '🌊 Marine Concrete',
+                    'foam': '🫧 Foam Concrete',
+                    'fiber': '🧵 Fiber Reinforced',
+                    'geopolymer': '♻️ Geopolymer',
+                    'pervious': '💧 Pervious Concrete',
+                    'lightweight': '🪶 Lightweight',
+                    'recycled': '♻️ Recycled Aggregate'
+                };
+                presetInfo = `<p style="background: #e8f5e9; padding: 8px; border-radius: 6px; margin-bottom: 10px;"><strong>Selected Preset:</strong> ${presetNames[selectedPreset] || selectedPreset}</p>`;
+            }
+            
+            typeDetails.innerHTML = presetInfo + `
+                <p><strong>Detected Type:</strong> ${concreteTypeInfo.type}</p>
                 <p><strong>Description:</strong> ${concreteTypeInfo.description}</p>
-                <p><strong>Typical Applications:</strong> ${concreteTypeInfo.applications}</p>
-                <p><strong>Key Characteristics:</strong> ${concreteTypeInfo.characteristics}</p>
+                <p><strong>Applications:</strong> ${concreteTypeInfo.applications}</p>
+                <p><strong>Characteristics:</strong> ${concreteTypeInfo.characteristics}</p>
             `;
 
             const cementProp = 1;
@@ -3564,6 +3678,9 @@
             console.log('👨‍🔬 Developed by Dr. Riaz Bhanbhro, Dr. Mahboob Oad, Dr. Muneeb Memon');
             console.log('🏛️ Quaid-e-Awam University of Engineering, Science & Technology');
             console.log('© 2025 QUEST Civil Engineering Department');
+            
+            // Auto-fetch prices on page load
+            fetchMarketPrices();
             
             updateFromGrade();
             calculateMix(false);
