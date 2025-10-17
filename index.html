@@ -211,6 +211,15 @@
         .preset-btn:nth-child(10):hover {
             background: linear-gradient(135deg, #06d6a0 0%, #1b9aaa 100%);
         }
+        
+        .preset-btn:nth-child(11):hover {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+            color: #2c3e50;
+        }
+        
+        .preset-btn:nth-child(12):hover {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+        }
 
         .preset-btn:active {
             transform: translateY(-1px) scale(1.02);
@@ -1051,6 +1060,8 @@
             <button class="preset-btn" onclick="loadPreset('fiber')">🧵 Fiber Reinforced</button>
             <button class="preset-btn" onclick="loadPreset('geopolymer')">♻️ Geopolymer</button>
             <button class="preset-btn" onclick="loadPreset('pervious')">💧 Pervious</button>
+            <button class="preset-btn" onclick="loadPreset('lightweight')">🪶 Lightweight</button>
+            <button class="preset-btn" onclick="loadPreset('recycled')">♻️ Recycled Aggregate</button>
         </div>
 
         <div class="dashboard">
@@ -1317,7 +1328,78 @@
 
                 <div class="form-group">
                     <label>Coarse Aggregate Specific Gravity</label>
-                    <input type="number" id="coarseSG" value="2.70" step="0.01" min="2.5" max="2.9" onchange="calculateMix()">
+                    <input type="number" id="coarseSG" value="2.70" step="0.01" min="1.0" max="2.9" onchange="calculateMix()">
+                </div>
+
+                <!-- Coarse Aggregate Replacements -->
+                <div class="checkbox-group">
+                    <input type="checkbox" id="useRCA" onchange="toggleCoarseAggReplacement('rca')">
+                    <label for="useRCA">Recycled Concrete Aggregate (RCA)</label>
+                </div>
+                
+                <div id="rcaOptions" style="display: none; background: #f8f9fa; padding: 15px; border-radius: 10px; margin-top: 10px; border: 2px solid #06d6a0;">
+                    <div class="form-group">
+                        <label>RCA Replacement % <span class="label-info">Standard: 20-100%</span></label>
+                        <div style="margin: 15px 0;">
+                            <input type="range" id="rcaPercent" min="20" max="100" value="50" step="10" oninput="updateSliderValue('rca'); calculateMix(false)" style="width: 100%;">
+                        </div>
+                        <span class="slider-value agg-value" id="rcaValue">50%</span>
+                        <span class="label-benefit">✓ Sustainable, reduces landfill waste, 85-95% strength of natural</span>
+                    </div>
+                    <div class="form-group">
+                        <label>RCA Specific Gravity <span class="label-info">Typical: 2.40-2.60</span></label>
+                        <input type="number" id="rcaSG" value="2.50" step="0.01" min="2.30" max="2.65" onchange="calculateMix()">
+                    </div>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="useRecycledBrick" onchange="toggleCoarseAggReplacement('recycledBrick')">
+                    <label for="useRecycledBrick">Recycled Brick Aggregate</label>
+                </div>
+                
+                <div id="recycledBrickOptions" style="display: none; background: #f8f9fa; padding: 15px; border-radius: 10px; margin-top: 10px; border: 2px solid #06d6a0;">
+                    <div class="form-group">
+                        <label>Brick Aggregate % <span class="label-info">Max: 50% (structural)</span></label>
+                        <div style="margin: 15px 0;">
+                            <input type="range" id="recycledBrickPercent" min="10" max="50" value="30" step="5" oninput="updateSliderValue('recycledBrick'); calculateMix(false)" style="width: 100%;">
+                        </div>
+                        <span class="slider-value agg-value" id="recycledBrickValue">30%</span>
+                        <span class="label-benefit">✓ Lightweight, good thermal insulation, higher water absorption</span>
+                    </div>
+                    <div class="form-group">
+                        <label>Brick Aggregate SG <span class="label-info">Typical: 1.90-2.20</span></label>
+                        <input type="number" id="recycledBrickSG" value="2.00" step="0.01" min="1.80" max="2.30" onchange="calculateMix()">
+                    </div>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="useLightweightAgg" onchange="toggleCoarseAggReplacement('lightweightAgg')">
+                    <label for="useLightweightAgg">Lightweight Aggregate</label>
+                </div>
+                
+                <div id="lightweightAggOptions" style="display: none; background: #f8f9fa; padding: 15px; border-radius: 10px; margin-top: 10px; border: 2px solid #06d6a0;">
+                    <div class="form-group">
+                        <label>Lightweight Aggregate Type</label>
+                        <select id="lightweightAggType" onchange="updateLightweightAggSG()">
+                            <option value="expanded-clay">Expanded Clay (LECA)</option>
+                            <option value="expanded-shale">Expanded Shale</option>
+                            <option value="pumice">Pumice</option>
+                            <option value="perlite">Perlite</option>
+                            <option value="vermiculite">Vermiculite</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Lightweight Agg % <span class="label-info">Typical: 50-100%</span></label>
+                        <div style="margin: 15px 0;">
+                            <input type="range" id="lightweightAggPercent" min="30" max="100" value="100" step="10" oninput="updateSliderValue('lightweightAgg'); calculateMix(false)" style="width: 100%;">
+                        </div>
+                        <span class="slider-value agg-value" id="lightweightAggValue">100%</span>
+                        <span class="label-benefit">✓ Reduced dead load, good insulation, density: 800-1800 kg/m³</span>
+                    </div>
+                    <div class="form-group">
+                        <label>Lightweight Agg SG <span class="label-info">Range: 0.60-1.80</span></label>
+                        <input type="number" id="lightweightAggSG" value="1.60" step="0.05" min="0.50" max="2.00" onchange="calculateMix()">
+                    </div>
                 </div>
             </div>
 
@@ -1712,6 +1794,13 @@
                     </div>
                 </div>
 
+                <div id="coarseAggResults" style="display: none;">
+                    <div class="scm-box" style="background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%); border-left-color: #f57c00;">
+                        <h3 style="color: #e65100;">🏔️ Coarse Aggregate Composition</h3>
+                        <div id="coarseAggDetails"></div>
+                    </div>
+                </div>
+
                 <div id="admixtureResults" style="display: none;">
                     <div class="admixture-box">
                         <h3>🧪 Chemical Admixtures Used</h3>
@@ -1845,37 +1934,42 @@
             document.getElementById('useWhiteCement').checked = false;
             document.getElementById('usePigment').checked = false;
             document.getElementById('useExposedAggregate').checked = false;
+            document.getElementById('useRCA').checked = false;
+            document.getElementById('useRecycledBrick').checked = false;
+            document.getElementById('useLightweightAgg').checked = false;
 
             // Hide ALL options divs
             ['flyAshOptions', 'ggbsOptions', 'silicaFumeOptions', 'metakaolinOptions', 'rhaOptions',
              'superplasticizerOptions', 'airEntrainingOptions', 'retarderOptions', 'acceleratorOptions',
-             'waterproofingOptions', 'viscosityOptions', 'foamAgentOptions', 'fibersOptions', 'pigmentOptions'].forEach(id => {
+             'waterproofingOptions', 'viscosityOptions', 'foamAgentOptions', 'fibersOptions', 'pigmentOptions',
+             'rcaOptions', 'recycledBrickOptions', 'lightweightAggOptions'].forEach(id => {
                 const element = document.getElementById(id);
                 if (element) element.style.display = 'none';
             });
 
             switch(type) {
                 case 'normal':
+                    // STANDARD: Normal concrete = 100% OPC, no SCMs required
                     document.getElementById('concreteGrade').value = '30';
                     document.getElementById('exposure').value = 'moderate';
                     document.getElementById('slump').value = '125';
-                    document.getElementById('useFlyAsh').checked = true;
-                    toggleSCM('flyAsh');
-                    document.getElementById('flyAshPercent').value = '25';
+                    // No materials selected - pure OPC concrete
                     break;
 
                 case 'hpc':
+                    // STANDARD: HPC requires SF or GGBS for dense microstructure + SP
                     document.getElementById('concreteGrade').value = '50';
                     document.getElementById('exposure').value = 'severe';
                     document.getElementById('slump').value = '175';
                     document.getElementById('useSilicaFume').checked = true;
-                    document.getElementById('useFlyAsh').checked = true;
+                    document.getElementById('useGGBS').checked = true;
                     document.getElementById('useSuperplasticizer').checked = true;
                     toggleSCM('silicaFume');
-                    toggleSCM('flyAsh');
+                    toggleSCM('ggbs');
                     toggleSuperplasticizer();
                     document.getElementById('silicaFumePercent').value = '8';
-                    document.getElementById('flyAshPercent').value = '20';
+                    document.getElementById('ggbsPercent').value = '25';
+                    document.getElementById('superplasticizerType').value = 'PCE';
                     document.getElementById('superplasticizerDosage').value = '1.5';
                     break;
 
@@ -1993,6 +2087,37 @@
                     document.getElementById('fineAggPercent').value = '10';
                     document.getElementById('maxAggSize').value = '20';
                     break;
+
+                case 'lightweight':
+                    // STANDARD: Lightweight concrete uses lightweight aggregates + possible SCMs
+                    document.getElementById('concreteGrade').value = '25';
+                    document.getElementById('exposure').value = 'moderate';
+                    document.getElementById('slump').value = '125';
+                    document.getElementById('useFlyAsh').checked = true;
+                    document.getElementById('useLightweightAgg').checked = true;
+                    toggleSCM('flyAsh');
+                    toggleCoarseAggReplacement('lightweightAgg');
+                    document.getElementById('flyAshPercent').value = '20';
+                    document.getElementById('lightweightAggPercent').value = '100';
+                    document.getElementById('coarseSG').value = '1.60';
+                    break;
+
+                case 'recycled':
+                    // STANDARD: Recycled aggregate concrete with SCMs for strength enhancement
+                    document.getElementById('concreteGrade').value = '30';
+                    document.getElementById('exposure').value = 'moderate';
+                    document.getElementById('slump').value = '125';
+                    document.getElementById('useFlyAsh').checked = true;
+                    document.getElementById('useSilicaFume').checked = true;
+                    document.getElementById('useRCA').checked = true;
+                    toggleSCM('flyAsh');
+                    toggleSCM('silicaFume');
+                    toggleCoarseAggReplacement('rca');
+                    document.getElementById('flyAshPercent').value = '25';
+                    document.getElementById('silicaFumePercent').value = '5';
+                    document.getElementById('rcaPercent').value = '50';
+                    document.getElementById('coarseSG').value = '2.55';
+                    break;
             }
 
             updateFromGrade();
@@ -2064,6 +2189,71 @@
             
             if (checkbox.checked) {
                 updateSliderValue(aggType);
+            }
+            calculateMix(false);
+        }
+
+        function toggleCoarseAggReplacement(aggType) {
+            let checkboxId;
+            if (aggType === 'rca') {
+                checkboxId = 'useRCA';
+            } else if (aggType === 'recycledBrick') {
+                checkboxId = 'useRecycledBrick';
+            } else if (aggType === 'lightweightAgg') {
+                checkboxId = 'useLightweightAgg';
+            }
+            
+            const checkbox = document.getElementById(checkboxId);
+            const options = document.getElementById(`${aggType}Options`);
+            options.style.display = checkbox.checked ? 'block' : 'none';
+            
+            if (checkbox.checked) {
+                updateSliderValue(aggType);
+                // Update coarse SG based on selection
+                if (aggType === 'rca' && checkbox.checked) {
+                    const rcaSG = parseFloat(document.getElementById('rcaSG').value);
+                    const rcaPercent = parseFloat(document.getElementById('rcaPercent').value) / 100;
+                    const currentSG = 2.70; // natural aggregate SG
+                    document.getElementById('coarseSG').value = (rcaSG * rcaPercent + currentSG * (1 - rcaPercent)).toFixed(2);
+                } else if (aggType === 'lightweightAgg' && checkbox.checked) {
+                    const lightSG = parseFloat(document.getElementById('lightweightAggSG').value);
+                    document.getElementById('coarseSG').value = lightSG.toFixed(2);
+                } else if (aggType === 'recycledBrick' && checkbox.checked) {
+                    const brickSG = parseFloat(document.getElementById('recycledBrickSG').value);
+                    const brickPercent = parseFloat(document.getElementById('recycledBrickPercent').value) / 100;
+                    const currentSG = 2.70;
+                    document.getElementById('coarseSG').value = (brickSG * brickPercent + currentSG * (1 - brickPercent)).toFixed(2);
+                }
+            }
+            calculateMix(false);
+        }
+
+        function updateLightweightAggSG() {
+            const aggType = document.getElementById('lightweightAggType').value;
+            const sgInput = document.getElementById('lightweightAggSG');
+            
+            switch(aggType) {
+                case 'expanded-clay':
+                    sgInput.value = '1.60';
+                    break;
+                case 'expanded-shale':
+                    sgInput.value = '1.55';
+                    break;
+                case 'pumice':
+                    sgInput.value = '1.20';
+                    break;
+                case 'perlite':
+                    sgInput.value = '0.80';
+                    break;
+                case 'vermiculite':
+                    sgInput.value = '0.65';
+                    break;
+            }
+            
+            // Update coarse SG if 100% replacement
+            const percent = parseFloat(document.getElementById('lightweightAggPercent').value);
+            if (percent === 100) {
+                document.getElementById('coarseSG').value = sgInput.value;
             }
             calculateMix(false);
         }
@@ -2547,6 +2737,52 @@
                 document.getElementById('fineAggDetails').innerHTML = fineAggHTML;
             } else {
                 document.getElementById('fineAggResults').style.display = 'none';
+            }
+
+            // Display coarse aggregate composition
+            const useRCA = document.getElementById('useRCA').checked;
+            const useRecycledBrick = document.getElementById('useRecycledBrick').checked;
+            const useLightweightAgg = document.getElementById('useLightweightAgg').checked;
+
+            if (useRCA || useRecycledBrick || useLightweightAgg) {
+                document.getElementById('coarseAggResults').style.display = 'block';
+                let coarseAggHTML = '<p><strong>Coarse Aggregate Composition:</strong></p>';
+                
+                let coarseRemaining = 100;
+                if (useRCA) {
+                    const percent = parseFloat(document.getElementById('rcaPercent').value);
+                    const amount = Math.round(coarseAggWeight * percent / 100);
+                    coarseAggHTML += `<p>• Recycled Concrete Aggregate (RCA): ${percent}% = ${amount} kg/m³ (SG: ${document.getElementById('rcaSG').value})</p>`;
+                    coarseRemaining -= percent;
+                }
+                if (useRecycledBrick) {
+                    const percent = parseFloat(document.getElementById('recycledBrickPercent').value);
+                    const amount = Math.round(coarseAggWeight * percent / 100);
+                    coarseAggHTML += `<p>• Recycled Brick Aggregate: ${percent}% = ${amount} kg/m³ (SG: ${document.getElementById('recycledBrickSG').value})</p>`;
+                    coarseRemaining -= percent;
+                }
+                if (useLightweightAgg) {
+                    const percent = parseFloat(document.getElementById('lightweightAggPercent').value);
+                    const amount = Math.round(coarseAggWeight * percent / 100);
+                    const lightType = document.getElementById('lightweightAggType').value;
+                    const lightTypeName = lightType === 'expanded-clay' ? 'Expanded Clay (LECA)' :
+                                         lightType === 'expanded-shale' ? 'Expanded Shale' :
+                                         lightType === 'pumice' ? 'Pumice' :
+                                         lightType === 'perlite' ? 'Perlite' : 'Vermiculite';
+                    coarseAggHTML += `<p>• Lightweight Aggregate (${lightTypeName}): ${percent}% = ${amount} kg/m³ (SG: ${document.getElementById('lightweightAggSG').value})</p>`;
+                    coarseRemaining -= percent;
+                }
+                
+                if (coarseRemaining > 0) {
+                    const naturalAmount = Math.round(coarseAggWeight * coarseRemaining / 100);
+                    coarseAggHTML += `<p>• Natural Coarse Aggregate: ${coarseRemaining}% = ${naturalAmount} kg/m³ (SG: 2.70)</p>`;
+                }
+                
+                coarseAggHTML += `<p><em>✓ Combined Coarse Aggregate SG: ${document.getElementById('coarseSG').value}</em></p>`;
+                
+                document.getElementById('coarseAggDetails').innerHTML = coarseAggHTML;
+            } else {
+                document.getElementById('coarseAggResults').style.display = 'none';
             }
 
             let admixtureList = [];
@@ -3275,11 +3511,15 @@
             document.getElementById('useFoamAgent').checked = false;
             document.getElementById('useFibers').checked = false;
             document.getElementById('useWaterproofing').checked = false;
+            document.getElementById('useRCA').checked = false;
+            document.getElementById('useRecycledBrick').checked = false;
+            document.getElementById('useLightweightAgg').checked = false;
             
             // Hide all options divs on page load
             ['flyAshOptions', 'ggbsOptions', 'silicaFumeOptions', 'metakaolinOptions', 'rhaOptions',
              'superplasticizerOptions', 'airEntrainingOptions', 'retarderOptions', 'acceleratorOptions',
-             'waterproofingOptions', 'viscosityOptions', 'foamAgentOptions', 'fibersOptions'].forEach(id => {
+             'waterproofingOptions', 'viscosityOptions', 'foamAgentOptions', 'fibersOptions', 
+             'rcaOptions', 'recycledBrickOptions', 'lightweightAggOptions'].forEach(id => {
                 const element = document.getElementById(id);
                 if (element) element.style.display = 'none';
             });
@@ -3292,6 +3532,9 @@
             updateSliderValue('rha');
             updateSliderValue('quarryDust');
             updateSliderValue('stoneDust');
+            updateSliderValue('rca');
+            updateSliderValue('recycledBrick');
+            updateSliderValue('lightweightAgg');
             updateSliderValue('superplasticizer');
             updateSliderValue('retarder');
             updateSliderValue('accelerator');
