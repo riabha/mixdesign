@@ -4187,7 +4187,7 @@
             const useFibers = safeGetChecked('useFibers');
             const useWaterproofing = safeGetChecked('useWaterproofing');
             
-            // Get results
+            // Get results from calculated values
             const opcResult = safeGetTextContent('cementResult', '0');
             const totalCementResult = safeGetTextContent('totalCementResult', '0');
             const waterResult = safeGetTextContent('waterResult', '0');
@@ -4196,6 +4196,29 @@
             const wcRatio = safeGetTextContent('wcRatio', '0.45');
             const mixStrength = safeGetTextContent('mixStrength', '30');
             const concreteType = safeGetTextContent('concreteTypeBadge', 'NORMAL CONCRETE');
+            
+            // Check if results are calculated (not default zeros)
+            const hasValidResults = parseFloat(opcResult) > 0 && parseFloat(waterResult) > 0;
+            
+            if (!hasValidResults) {
+                alert('⚠️ Please calculate the mix design first by clicking "🔬 Calculate Mix Design" button before generating the report.');
+                throw new Error('No calculated results available. Please calculate mix design first.');
+            }
+            
+            // Calculate additional values for comprehensive report
+            const totalMixWeight = parseFloat(totalCementResult) + parseFloat(waterResult) + parseFloat(fineResult) + parseFloat(coarseResult);
+            const cementPercentage = ((parseFloat(totalCementResult) / totalMixWeight) * 100).toFixed(1);
+            const waterPercentage = ((parseFloat(waterResult) / totalMixWeight) * 100).toFixed(1);
+            const finePercentage = ((parseFloat(fineResult) / totalMixWeight) * 100).toFixed(1);
+            const coarsePercentage = ((parseFloat(coarseResult) / totalMixWeight) * 100).toFixed(1);
+            
+            // Calculate total SCM percentage
+            let totalSCMPercent = 0;
+            if (useFlyAsh) totalSCMPercent += parseFloat(safeGetValue('flyAshPercent', '0'));
+            if (useGGBS) totalSCMPercent += parseFloat(safeGetValue('ggbsPercent', '0'));
+            if (useSilicaFume) totalSCMPercent += parseFloat(safeGetValue('silicaFumePercent', '0'));
+            if (useMetakaolin) totalSCMPercent += parseFloat(safeGetValue('metakaolinPercent', '0'));
+            if (useRHA) totalSCMPercent += parseFloat(safeGetValue('rhaPercent', '0'));
             
             let scmRows = '';
             if (useFlyAsh) {
@@ -4413,6 +4436,128 @@
                                 <td>Cement : Fine Agg : Coarse Agg (by weight)</td>
                                 <td>1 : ${(parseFloat(fineResult) / parseFloat(totalCementResult)).toFixed(2)} : ${(parseFloat(coarseResult) / parseFloat(totalCementResult)).toFixed(2)}</td>
                             </tr>
+                            <tr>
+                                <td>Total Mix Weight per m³</td>
+                                <td>${totalMixWeight.toFixed(0)} kg/m³</td>
+                            </tr>
+                        </table>
+                        
+                        <h3>Mix Composition (% by Weight)</h3>
+                        <table class="report-table">
+                            <tr>
+                                <th>Component</th>
+                                <th>Percentage</th>
+                            </tr>
+                            <tr>
+                                <td>Cementitious Materials</td>
+                                <td>${cementPercentage}%</td>
+                            </tr>
+                            <tr>
+                                <td>Water</td>
+                                <td>${waterPercentage}%</td>
+                            </tr>
+                            <tr>
+                                <td>Fine Aggregate</td>
+                                <td>${finePercentage}%</td>
+                            </tr>
+                            <tr>
+                                <td>Coarse Aggregate</td>
+                                <td>${coarsePercentage}%</td>
+                            </tr>
+                        </table>
+                        
+                        <h3>Concrete Yield</h3>
+                        <table class="report-table">
+                            <tr>
+                                <th>Batch Size</th>
+                                <th>Quantities Required</th>
+                            </tr>
+                            <tr>
+                                <td><strong>For 1 m³:</strong></td>
+                                <td>Cement: ${totalCementResult} kg | Water: ${waterResult} kg | Fine Agg: ${fineResult} kg | Coarse Agg: ${coarseResult} kg</td>
+                            </tr>
+                            <tr>
+                                <td><strong>For 10 m³:</strong></td>
+                                <td>Cement: ${(parseFloat(totalCementResult) * 10).toFixed(0)} kg | Water: ${(parseFloat(waterResult) * 10).toFixed(0)} kg | Fine Agg: ${(parseFloat(fineResult) * 10).toFixed(0)} kg | Coarse Agg: ${(parseFloat(coarseResult) * 10).toFixed(0)} kg</td>
+                            </tr>
+                            <tr>
+                                <td><strong>For 100 m³:</strong></td>
+                                <td>Cement: ${(parseFloat(totalCementResult) * 100 / 1000).toFixed(2)} tonnes | Water: ${(parseFloat(waterResult) * 100 / 1000).toFixed(2)} tonnes | Fine Agg: ${(parseFloat(fineResult) * 100 / 1000).toFixed(2)} tonnes | Coarse Agg: ${(parseFloat(coarseResult) * 100 / 1000).toFixed(2)} tonnes</td>
+                            </tr>
+                        </table>
+                    </div>
+                    
+                    <div class="report-section">
+                        <h2>📈 Estimated Strength Development</h2>
+                        <table class="report-table">
+                            <tr>
+                                <th>Age (Days)</th>
+                                <th>Expected Strength (MPa)</th>
+                                <th>% of 28-day Strength</th>
+                            </tr>
+                            <tr>
+                                <td>3 days</td>
+                                <td>${(parseFloat(targetStrength) * 0.65).toFixed(1)} MPa</td>
+                                <td>~65%</td>
+                            </tr>
+                            <tr>
+                                <td>7 days</td>
+                                <td>${(parseFloat(targetStrength) * 0.80).toFixed(1)} MPa</td>
+                                <td>~80%</td>
+                            </tr>
+                            <tr style="background: #e0f2fe;">
+                                <td><strong>28 days</strong></td>
+                                <td><strong>${targetStrength} MPa</strong></td>
+                                <td><strong>100%</strong></td>
+                            </tr>
+                            <tr>
+                                <td>56 days</td>
+                                <td>${(parseFloat(targetStrength) * 1.05).toFixed(1)} MPa</td>
+                                <td>~105%</td>
+                            </tr>
+                            <tr>
+                                <td>90 days</td>
+                                <td>${(parseFloat(targetStrength) * 1.10).toFixed(1)} MPa</td>
+                                <td>~110%</td>
+                            </tr>
+                        </table>
+                        <p style="font-size: 0.85rem; color: #666; margin-top: 10px; font-style: italic;">
+                            Note: Strength development varies based on curing conditions, SCM content, and ambient temperature. 
+                            ${totalSCMPercent > 0 ? 'SCM-based concrete may show slower early strength but superior long-term strength gain.' : ''}
+                        </p>
+                    </div>
+                    
+                    <div class="report-section">
+                        <h2>📐 Design Methodology</h2>
+                        <table class="report-table">
+                            <tr>
+                                <th>Aspect</th>
+                                <th>Method/Standard</th>
+                            </tr>
+                            <tr>
+                                <td>Mix Design Method</td>
+                                <td>ACI 211.1 (Absolute Volume Method)</td>
+                            </tr>
+                            <tr>
+                                <td>Strength Calculation</td>
+                                <td>Target Strength = Characteristic Strength + 1.65 × Std. Deviation</td>
+                            </tr>
+                            <tr>
+                                <td>W/C Ratio Selection</td>
+                                <td>Based on exposure conditions and strength requirements (IS 456)</td>
+                            </tr>
+                            <tr>
+                                <td>Water Content</td>
+                                <td>Based on slump requirement and maximum aggregate size (ACI 211.1 Tables)</td>
+                            </tr>
+                            <tr>
+                                <td>Aggregate Proportions</td>
+                                <td>Absolute volume method considering specific gravity</td>
+                            </tr>
+                            ${totalSCMPercent > 0 ? `<tr>
+                                <td>SCM Incorporation</td>
+                                <td>Per ACI 232.2R, ACI 233R, ACI 234R with ${totalSCMPercent}% total replacement</td>
+                            </tr>` : ''}
                         </table>
                     </div>
                     
