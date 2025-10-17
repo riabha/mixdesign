@@ -13,6 +13,7 @@ The dashboard automatically identifies and displays the type of concrete being d
 - **Ultra-High Performance Concrete (UHPC)** - Exceptional strength (>60 MPa, W/C <0.35, with silica fume)
 - **Self-Compacting Concrete (SCC)** - Flows without vibration (>200mm slump, VMA, high SP dosage)
 - **Mass Concrete** - Low heat generation (≥50% SCM, ≤35 MPa)
+- **Foam Concrete (Cellular Concrete)** - Lightweight (400-1800 kg/m³), excellent insulation, void filling
 
 Each classification includes:
 - Type identification with color-coded badge
@@ -44,6 +45,7 @@ One-click presets for common concrete types:
 - 🌊 **Self-Compacting** - M35 with Fly Ash + PCE + VMA
 - 🏔️ **Mass Concrete** - M25 with GGBS + Fly Ash + Retarder
 - 🌊 **Marine Grade** - M40 with GGBS + Silica Fume + PCE
+- 🫧 **Foam Concrete** - M15 with Foaming Agent, Lightweight (400-1800 kg/m³)
 
 ### 📊 Enhanced Grade Selection
 
