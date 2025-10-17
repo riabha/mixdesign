@@ -4167,7 +4167,7 @@
             const fineSG = safeGetValue('fineSG', '2.65');
             const coarseSG = safeGetValue('coarseSG', '2.70');
             const maxAggSize = safeGetValue('maxAggSize', '20');
-            const fineAggPercent = (parseFloat(safeGetValue('fineAggPercent', '0.38')) * 100).toFixed(0);
+            const fineAggPercent = parseFloat(safeGetValue('fineAggPercent', '38')).toFixed(0);
             const coarseAggPercent = (100 - parseFloat(fineAggPercent)).toFixed(0);
             
             // Get SCM details
