@@ -1012,11 +1012,12 @@
             <p>Professional Mix Design with SCMs, Fine Aggregate Alternatives & Chemical Admixtures</p>
             
             <div class="action-buttons" style="display: flex; gap: 10px; justify-content: center; margin-top: 15px; flex-wrap: wrap;">
-                <button class="action-btn" onclick="saveMix()" style="background: linear-gradient(135deg, #4caf50, #388e3c); color: white; padding: 10px 20px; border: none; border-radius: 20px; font-weight: 600; cursor: pointer;">💾 Save Mix</button>
-                <button class="action-btn" onclick="loadMix()" style="background: linear-gradient(135deg, #2196f3, #1565c0); color: white; padding: 10px 20px; border: none; border-radius: 20px; font-weight: 600; cursor: pointer;">📂 Load Mix</button>
+                <button class="action-btn" onclick="saveMix()" style="background: linear-gradient(135deg, #4caf50, #388e3c); color: white; padding: 10px 20px; border: none; border-radius: 20px; font-weight: 600; cursor: pointer;">💾 Save</button>
+                <button class="action-btn" onclick="loadMix()" style="background: linear-gradient(135deg, #2196f3, #1565c0); color: white; padding: 10px 20px; border: none; border-radius: 20px; font-weight: 600; cursor: pointer;">📂 Load</button>
                 <button class="action-btn" onclick="compareMix()" style="background: linear-gradient(135deg, #ff9800, #f57c00); color: white; padding: 10px 20px; border: none; border-radius: 20px; font-weight: 600; cursor: pointer;">⚖️ Compare</button>
-                <button class="action-btn" onclick="exportToPDF()" style="background: linear-gradient(135deg, #e91e63, #c2185b); color: white; padding: 10px 20px; border: none; border-radius: 20px; font-weight: 600; cursor: pointer;">📄 Export PDF</button>
-                <button class="action-btn" onclick="generateQR()" style="background: linear-gradient(135deg, #9c27b0, #7b1fa2); color: white; padding: 10px 20px; border: none; border-radius: 20px; font-weight: 600; cursor: pointer;">📱 QR Code</button>
+                <button class="action-btn" onclick="exportToPDF()" style="background: linear-gradient(135deg, #e91e63, #c2185b); color: white; padding: 10px 20px; border: none; border-radius: 20px; font-weight: 600; cursor: pointer;">📄 PDF</button>
+                <button class="action-btn" onclick="generateQR()" style="background: linear-gradient(135deg, #9c27b0, #7b1fa2); color: white; padding: 10px 20px; border: none; border-radius: 20px; font-weight: 600; cursor: pointer;">📱 QR</button>
+                <button class="action-btn" onclick="toggleDarkMode()" style="background: linear-gradient(135deg, #37474f, #263238); color: white; padding: 10px 20px; border: none; border-radius: 20px; font-weight: 600; cursor: pointer;">🌓 Dark</button>
             </div>
         </header>
 
@@ -1479,6 +1480,29 @@
                 </div>
             </div>
 
+            <!-- Weather & Temperature -->
+            <div class="card" style="border: 2px solid #ff9800;">
+                <h2 style="background: linear-gradient(90deg, #ff9800, #f57c00); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; border-image: linear-gradient(90deg, #ff9800, #f57c00) 1;">🌡️ Weather Conditions</h2>
+                <div class="form-group">
+                    <label>Ambient Temperature (°C)</label>
+                    <div style="margin: 15px 0;">
+                        <input type="range" id="ambientTemp" value="25" step="1" min="-5" max="45" oninput="updateSliderValue('ambientTemp'); calculateMix(false)" style="width: 100%;">
+                    </div>
+                    <span class="slider-value" id="ambientTempValue" style="background: linear-gradient(135deg, #ff9800, #f57c00);">25°C</span>
+                </div>
+                <div class="form-group">
+                    <label>Weather Condition</label>
+                    <select id="weatherCondition" onchange="calculateMix(false)">
+                        <option value="normal">Normal (15-30°C)</option>
+                        <option value="hot">Hot Weather (>30°C)</option>
+                        <option value="cold">Cold Weather (<10°C)</option>
+                        <option value="humid">High Humidity</option>
+                        <option value="windy">Windy/Dry</option>
+                    </select>
+                </div>
+                <div id="weatherWarning" style="display: none;" class="warning-box"></div>
+            </div>
+
             <!-- Cost Calculator -->
             <div class="card" style="border: 2px solid #4caf50;">
                 <h2 style="background: linear-gradient(90deg, #4caf50, #388e3c); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; border-image: linear-gradient(90deg, #4caf50, #388e3c) 1;">💰 Cost Calculator</h2>
@@ -1551,7 +1575,49 @@
                     <label>Volume to Calculate (m³)</label>
                     <input type="number" id="volume" value="1" step="0.1" min="0.1" max="1000" onchange="calculateMix()">
                 </div>
+                <div class="form-group">
+                    <label>Mixer Capacity (m³) <span class="label-info">For batch calculation</span></label>
+                    <input type="number" id="mixerCapacity" value="0.5" step="0.1" min="0.1" max="5" onchange="calculateMix(false)">
+                </div>
                 <button class="btn" onclick="calculateMix(true)">🔬 Calculate Mix Design</button>
+                <button class="btn" onclick="optimizeMix()" style="background: linear-gradient(135deg, #ffa726, #fb8c00); margin-top: 10px;">🎯 Optimize Mix</button>
+            </div>
+
+            <!-- Aesthetic & Color -->
+            <div class="card" style="border: 2px solid #e91e63;">
+                <h2 style="background: linear-gradient(90deg, #e91e63, #c2185b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; border-image: linear-gradient(90deg, #e91e63, #c2185b) 1;">🎨 Aesthetic Properties</h2>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="useWhiteCement" onchange="calculateMix(false)">
+                    <label for="useWhiteCement">White Cement (for colored concrete)</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="usePigment" onchange="toggleAdmixture('pigment')">
+                    <label for="usePigment">Add Color Pigment</label>
+                </div>
+                <div id="pigmentOptions" style="display: none; background: #f8f9fa; padding: 15px; border-radius: 10px; margin-top: 10px; border: 2px solid #e91e63;">
+                    <div class="form-group">
+                        <label>Pigment Color</label>
+                        <select id="pigmentColor" onchange="calculateMix(false)">
+                            <option value="red">Red/Terracotta</option>
+                            <option value="yellow">Yellow/Buff</option>
+                            <option value="brown">Brown/Tan</option>
+                            <option value="green">Green</option>
+                            <option value="blue">Blue</option>
+                            <option value="black">Black/Charcoal</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Pigment Dosage (% by cement weight) <span class="label-info">Typical: 2-8%</span></label>
+                        <div style="margin: 15px 0;">
+                            <input type="range" id="pigmentDosage" value="4" step="0.5" min="1" max="10" oninput="updateSliderValue('pigment'); calculateMix(false)" style="width: 100%;">
+                        </div>
+                        <span class="slider-value" id="pigmentValue" style="background: linear-gradient(135deg, #e91e63, #c2185b);">4%</span>
+                    </div>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="useExposedAggregate" onchange="calculateMix(false)">
+                    <label for="useExposedAggregate">Exposed Aggregate Finish</label>
+                </div>
             </div>
 
             <!-- Results -->
@@ -1675,6 +1741,38 @@
                 <div class="admixture-box">
                     <h3>⏱️ Recommended Curing Schedule</h3>
                     <div id="curingSchedule"></div>
+                </div>
+
+                <!-- Batch Calculator -->
+                <div class="mix-proportions">
+                    <h3>📦 Batch Calculator</h3>
+                    <div id="batchCalculator"></div>
+                </div>
+
+                <!-- Testing Schedule -->
+                <div class="info-box" style="background: linear-gradient(135deg, #e1f5fe 0%, #b3e5fc 100%); border-left-color: #0288d1;">
+                    <h3 style="color: #01579b;">🧪 Testing Schedule & Quality Control</h3>
+                    <div id="testingSchedule"></div>
+                </div>
+
+                <!-- Durability Parameters -->
+                <div class="concrete-type-box" style="background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 100%); border-left-color: #c2185b;">
+                    <h3 style="color: #880e4f;">🛡️ Durability Assessment</h3>
+                    <div id="durabilityParams"></div>
+                </div>
+
+                <!-- Weather Recommendations -->
+                <div id="weatherRecommendations" style="display: none;">
+                    <div class="warning-box">
+                        <h3 style="color: #c62828;">🌡️ Weather-Based Recommendations</h3>
+                        <div id="weatherAdvice"></div>
+                    </div>
+                </div>
+
+                <!-- Visual Charts -->
+                <div class="info-box" style="background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%); border-left-color: #8e24aa;">
+                    <h3 style="color: #6a1b9a;">📊 Visual Analysis</h3>
+                    <div id="visualCharts"></div>
                 </div>
             </div>
 
@@ -1980,6 +2078,21 @@
                 valueDisplay = document.getElementById('fiberValue');
                 if (slider && valueDisplay) {
                     valueDisplay.textContent = slider.value + ' kg/m³';
+                }
+                return;
+            }
+            
+            // Handle temperature (special case - °C)
+            if (type === 'ambientTemp') {
+                slider = document.getElementById('ambientTemp');
+                valueDisplay = document.getElementById('ambientTempValue');
+                if (slider && valueDisplay) {
+                    const temp = parseFloat(slider.value);
+                    valueDisplay.textContent = temp + '°C';
+                    valueDisplay.style.background = temp > 35 ? 'linear-gradient(135deg, #f44336, #d32f2f)' :
+                                                    temp > 25 ? 'linear-gradient(135deg, #ff9800, #f57c00)' :
+                                                    temp < 10 ? 'linear-gradient(135deg, #2196f3, #1565c0)' :
+                                                    'linear-gradient(135deg, #4caf50, #388e3c)';
                 }
                 return;
             }
@@ -2593,6 +2706,67 @@
                 <p style="color: #1565c0;"><strong>Curing Method:</strong> ${curingInfo.method}</p>
                 <p style="color: #1565c0;"><strong>Important Notes:</strong> ${curingInfo.notes}</p>`;
 
+            // ===== BATCH CALCULATOR =====
+            const mixerCapacity = parseFloat(document.getElementById('mixerCapacity').value);
+            const batchInfo = calculateBatches(volume, mixerCapacity);
+            document.getElementById('batchCalculator').innerHTML = `
+                <p style="color: #1b5e20;"><strong>Total Volume:</strong> ${volume} m³</p>
+                <p style="color: #1b5e20;"><strong>Mixer Capacity:</strong> ${mixerCapacity} m³</p>
+                <p style="color: #1b5e20;"><strong>Number of Batches:</strong> ${batchInfo.numBatches}</p>
+                <p style="color: #1b5e20;"><strong>Last Batch Size:</strong> ${batchInfo.lastBatchSize} m³</p>
+                <p style="color: #1b5e20;"><strong>Mixing Time per Batch:</strong> ${batchInfo.mixingTime} minutes</p>
+                <p style="color: #1b5e20;"><strong>Estimated Total Time:</strong> ${batchInfo.totalTime} minutes (${Math.round(batchInfo.totalTime/60)} hours)</p>`;
+
+            // ===== TESTING SCHEDULE =====
+            const testInfo = generateTestingSchedule(volume, concreteTypeInfo.type);
+            document.getElementById('testingSchedule').innerHTML = `
+                <p style="color: #01579b;"><strong>Testing Standard:</strong> ${testInfo.standards}</p>
+                <p style="color: #01579b;"><strong>Test Ages:</strong> ${testInfo.testAges.join(', ')} days</p>
+                <p style="color: #01579b;"><strong>Tests Required:</strong> ${testInfo.testsRequired} (every ${volume <= 25 ? volume : 25}m³)</p>
+                <p style="color: #01579b;"><strong>Cubes per Test:</strong> ${testInfo.cubesPerTest}</p>
+                <p style="color: #01579b;"><strong>Total Cubes Needed:</strong> ${testInfo.totalCubes} cubes (150mm x 150mm x 150mm)</p>
+                <p style="color: #01579b;"><strong>Slump Test:</strong> Every batch or every 50m³</p>`;
+
+            // ===== DURABILITY ASSESSMENT =====
+            const durability = assessDurability(actualWC, totalSCMPercent, useSilicaFume, useGGBS, exposure);
+            const getColorForRating = (rating) => {
+                return rating === 'Excellent' ? '#2e7d32' : rating === 'Very Good' ? '#388e3c' : 
+                       rating === 'Good' ? '#fbc02d' : rating === 'Moderate' ? '#f57c00' : '#d32f2f';
+            };
+            document.getElementById('durabilityParams').innerHTML = `
+                <p style="color: #880e4f;"><strong>Overall Rating:</strong> <span style="color: ${getColorForRating(durability.overallRating)}; font-weight: bold;">${durability.overallRating}</span></p>
+                <p style="color: #880e4f;"><strong>Chloride Resistance:</strong> <span style="color: ${getColorForRating(durability.chlorideResistance)};">${durability.chlorideResistance}</span></p>
+                <p style="color: #880e4f;"><strong>Sulfate Resistance:</strong> <span style="color: ${getColorForRating(durability.sulfateResistance)};">${durability.sulfateResistance}</span></p>
+                <p style="color: #880e4f;"><strong>Carbonation Resistance:</strong> <span style="color: ${getColorForRating(durability.carbonationResistance)};">${durability.carbonationResistance}</span></p>
+                <p style="color: #880e4f;"><strong>Freeze-Thaw Resistance:</strong> <span style="color: ${getColorForRating(durability.freezeThawResistance)};">${durability.freezeThawResistance}</span></p>
+                <p style="color: #880e4f;"><strong>Permeability:</strong> <span style="color: ${getColorForRating(durability.permeability === 'Very Low' ? 'Excellent' : durability.permeability === 'Low' ? 'Very Good' : 'Moderate')};">${durability.permeability}</span></p>`;
+
+            // ===== WEATHER RECOMMENDATIONS =====
+            const temp = parseFloat(document.getElementById('ambientTemp').value);
+            const weatherCond = document.getElementById('weatherCondition').value;
+            const weatherRecs = getWeatherRecommendations(temp, weatherCond);
+            if (weatherRecs.length > 0) {
+                document.getElementById('weatherRecommendations').style.display = 'block';
+                document.getElementById('weatherAdvice').innerHTML = '<p style="color: #c62828;">' + weatherRecs.join('<br>') + '</p>';
+            } else {
+                document.getElementById('weatherRecommendations').style.display = 'none';
+            }
+
+            // ===== VISUAL CHARTS =====
+            document.getElementById('visualCharts').innerHTML = generateVisualCharts(strengthPred, costData);
+
+            // ===== AESTHETIC/COLOR ADDITIONS =====
+            if (document.getElementById('usePigment')?.checked) {
+                const pigmentColor = document.getElementById('pigmentColor').value;
+                const pigmentDosage = parseFloat(document.getElementById('pigmentDosage').value);
+                const pigmentAmount = Math.round(finalTotalCementitious * volume * pigmentDosage / 100 * 100) / 100;
+                const aestheticInfo = `<p><strong>Color Pigment (${pigmentColor}):</strong> ${pigmentDosage}% by cement weight = ${pigmentAmount} kg<br>
+                                      <em>For best color: Use white cement, ensure consistent mixing, cure properly to avoid efflorescence</em></p>`;
+                if (admixtureList.length > 0) {
+                    document.getElementById('admixtureDetails').innerHTML += aestheticInfo;
+                }
+            }
+
             document.getElementById('resultsCard').style.display = 'block';
             
             // Only scroll to results if explicitly requested (button click)
@@ -2604,6 +2778,204 @@
         }
 
         // ========== ADVANCED FEATURES ==========
+
+        // Dark Mode Toggle
+        let darkMode = false;
+        function toggleDarkMode() {
+            darkMode = !darkMode;
+            if (darkMode) {
+                document.body.style.background = 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)';
+                document.querySelectorAll('.card').forEach(card => {
+                    card.style.background = '#2a2a3e';
+                    card.style.color = '#e0e0e0';
+                });
+                alert('🌙 Dark mode enabled!');
+            } else {
+                document.body.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+                document.querySelectorAll('.card').forEach(card => {
+                    card.style.background = 'white';
+                    card.style.color = '#333';
+                });
+                alert('☀️ Light mode enabled!');
+            }
+        }
+
+        // Mix Optimization
+        function optimizeMix() {
+            const options = ['cost', 'sustainability', 'strength'];
+            const choice = prompt("Optimize for:\n1. Cost (minimum cost)\n2. Sustainability (maximum green score)\n3. Strength (maximum performance)\n\nEnter 1, 2, or 3:");
+            
+            if (choice === '1') {
+                document.getElementById('useFlyAsh').checked = true;
+                document.getElementById('flyAshPercent').value = '35';
+                document.getElementById('fineAggType').value = 'natural';
+                toggleSCM('flyAsh');
+                alert('✅ Optimized for COST:\n• 35% Fly Ash (cheaper than cement)\n• Natural sand\n• Minimal admixtures');
+            } else if (choice === '2') {
+                document.getElementById('useGGBS').checked = true;
+                document.getElementById('useFlyAsh').checked = true;
+                document.getElementById('ggbsPercent').value = '50';
+                document.getElementById('flyAshPercent').value = '20';
+                document.getElementById('fineAggType').value = 'msand';
+                toggleSCM('ggbs');
+                toggleSCM('flyAsh');
+                alert('✅ Optimized for SUSTAINABILITY:\n• 70% total SCM\n• M-Sand\n• Maximum CO₂ reduction');
+            } else if (choice === '3') {
+                document.getElementById('useSilicaFume').checked = true;
+                document.getElementById('useSuperplasticizer').checked = true;
+                document.getElementById('silicaFumePercent').value = '10';
+                document.getElementById('superplasticizerDosage').value = '2.0';
+                document.getElementById('manualWC').checked = true;
+                document.getElementById('manualWCValue').value = '0.30';
+                toggleSCM('silicaFume');
+                toggleSuperplasticizer();
+                toggleWCMode();
+                alert('✅ Optimized for STRENGTH:\n• Silica fume 10%\n• High superplasticizer\n• Very low W/C ratio');
+            }
+            calculateMix(false);
+        }
+
+        // Batch Calculator
+        function calculateBatches(totalVolume, mixerCapacity) {
+            const numBatches = Math.ceil(totalVolume / mixerCapacity);
+            const lastBatchSize = totalVolume % mixerCapacity || mixerCapacity;
+            const mixingTime = mixerCapacity <= 0.5 ? 3 : mixerCapacity <= 1 ? 4 : 5;
+            const totalTime = numBatches * (mixingTime + 5); // mixing + loading/discharge
+            
+            return {
+                numBatches,
+                lastBatchSize: lastBatchSize.toFixed(2),
+                mixingTime,
+                totalTime
+            };
+        }
+
+        // Testing Schedule Generator
+        function generateTestingSchedule(volume, concreteType) {
+            const cubesPerTest = 3;
+            let testAges = [7, 28];
+            
+            if (concreteType.includes('GGBS') || concreteType.includes('Fly Ash') || concreteType.includes('Geopolymer')) {
+                testAges = [7, 28, 56];
+            }
+            if (concreteType.includes('UHPC') || concreteType.includes('High-Performance')) {
+                testAges = [3, 7, 28, 56];
+            }
+            
+            const testsRequired = volume <= 5 ? 1 : volume <= 25 ? 2 : Math.ceil(volume / 25);
+            const totalCubes = testsRequired * cubesPerTest * testAges.length;
+            
+            return {
+                testAges,
+                testsRequired,
+                cubesPerTest,
+                totalCubes,
+                standards: 'ASTM C39 / IS 516'
+            };
+        }
+
+        // Durability Assessment
+        function assessDurability(wcRatio, totalSCM, hasSilicaFume, hasGGBS, exposure) {
+            let chlorideResistance = 'Moderate';
+            let carbonationResistance = 'Moderate';
+            let sulfateResistance = 'Moderate';
+            let freezeThawResistance = 'Moderate';
+            
+            // Chloride resistance
+            if (wcRatio < 0.35 || hasSilicaFume || hasGGBS) {
+                chlorideResistance = 'Excellent';
+            } else if (wcRatio < 0.45 || totalSCM > 30) {
+                chlorideResistance = 'Very Good';
+            } else if (wcRatio > 0.55) {
+                chlorideResistance = 'Poor';
+            }
+            
+            // Sulfate resistance
+            if (hasGGBS || totalSCM > 40) {
+                sulfateResistance = 'Excellent';
+            } else if (totalSCM > 20) {
+                sulfateResistance = 'Very Good';
+            }
+            
+            // Carbonation
+            if (totalSCM > 50) {
+                carbonationResistance = 'Moderate'; // SCMs can increase carbonation
+            } else if (wcRatio < 0.40) {
+                carbonationResistance = 'Very Good';
+            }
+            
+            // Freeze-thaw (requires air entraining)
+            const hasAirEntraining = document.getElementById('useAirEntraining')?.checked;
+            if (hasAirEntraining && wcRatio < 0.45) {
+                freezeThawResistance = 'Excellent';
+            } else if (hasAirEntraining) {
+                freezeThawResistance = 'Very Good';
+            } else {
+                freezeThawResistance = 'Poor';
+            }
+            
+            // Permeability estimate
+            let permeability = wcRatio < 0.35 ? 'Very Low' : wcRatio < 0.45 ? 'Low' : wcRatio < 0.55 ? 'Moderate' : 'High';
+            
+            return {
+                chlorideResistance,
+                carbonationResistance,
+                sulfateResistance,
+                freezeThawResistance,
+                permeability,
+                overallRating: chlorideResistance === 'Excellent' && sulfateResistance === 'Excellent' ? 'Excellent' : 'Good'
+            };
+        }
+
+        // Weather Recommendations
+        function getWeatherRecommendations(temp, weatherCondition) {
+            let recommendations = [];
+            
+            if (temp > 35 || weatherCondition === 'hot') {
+                recommendations.push('⚠️ HOT WEATHER CONCRETING:');
+                recommendations.push('• Use retarder (0.3-0.5%)');
+                recommendations.push('• Consider ice or chilled water');
+                recommendations.push('• Increase mixing time by 25%');
+                recommendations.push('• Cast early morning or evening');
+                recommendations.push('• Protect from sun and wind');
+                recommendations.push('• Extended curing critical');
+            } else if (temp < 10 || weatherCondition === 'cold') {
+                recommendations.push('❄️ COLD WEATHER CONCRETING:');
+                recommendations.push('• Use accelerator (1-2%)');
+                recommendations.push('• Warm water (not >30°C)');
+                recommendations.push('• Protect from freezing for 72 hours');
+                recommendations.push('• Consider heated enclosures');
+                recommendations.push('• Minimum concrete temp: 10°C at placement');
+            } else if (weatherCondition === 'windy' || weatherCondition === 'humid') {
+                recommendations.push('💨 SPECIAL CONDITIONS:');
+                recommendations.push('• Use windbreaks and covers');
+                recommendations.push('• Apply curing compound immediately');
+                recommendations.push('• Monitor plastic shrinkage cracking');
+            }
+            
+            return recommendations;
+        }
+
+        // Visual Charts Generator (Simple ASCII/Text based)
+        function generateVisualCharts(strengthPred, costData) {
+            const maxStrength = strengthPred.day90;
+            const day3Bar = '█'.repeat(Math.round(strengthPred.day3 / maxStrength * 30));
+            const day7Bar = '█'.repeat(Math.round(strengthPred.day7 / maxStrength * 30));
+            const day28Bar = '█'.repeat(Math.round(strengthPred.day28 / maxStrength * 30));
+            const day56Bar = '█'.repeat(Math.round(strengthPred.day56 / maxStrength * 30));
+            const day90Bar = '█'.repeat(Math.round(strengthPred.day90 / maxStrength * 30));
+            
+            return `
+                <div style="font-family: monospace; background: white; padding: 15px; border-radius: 10px;">
+                    <strong style="color: #6a1b9a;">Strength Development Curve:</strong><br><br>
+                    <div style="color: #667eea;">3 Days:  ${day3Bar} ${strengthPred.day3} MPa</div>
+                    <div style="color: #667eea;">7 Days:  ${day7Bar} ${strengthPred.day7} MPa</div>
+                    <div style="color: #4caf50;">28 Days: ${day28Bar} ${strengthPred.day28} MPa ⭐</div>
+                    <div style="color: #667eea;">56 Days: ${day56Bar} ${strengthPred.day56} MPa</div>
+                    <div style="color: #667eea;">90 Days: ${day90Bar} ${strengthPred.day90} MPa</div>
+                </div>
+            `;
+        }
 
         // Save Mix to localStorage
         function saveMix() {
@@ -2900,6 +3272,8 @@
             updateSliderValue('foamDensity');
             updateSliderValue('foamAgent');
             updateSliderValue('fiber');
+            updateSliderValue('ambientTemp');
+            updateSliderValue('pigment');
             
             updateFromGrade();
             calculateMix(false);
