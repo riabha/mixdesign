@@ -970,6 +970,39 @@
         .card:nth-child(4) { animation-delay: 0.4s; }
         .card:nth-child(5) { animation-delay: 0.5s; }
         .card:nth-child(6) { animation-delay: 0.6s; }
+
+        /* Action buttons hover effects */
+        .action-btn {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+        }
+
+        .action-btn:active {
+            transform: translateY(-1px);
+        }
+
+        /* Print styles */
+        @media print {
+            body {
+                background: white !important;
+            }
+            .preset-buttons, .action-buttons, footer {
+                display: none !important;
+            }
+            .card {
+                break-inside: avoid;
+                box-shadow: none !important;
+                border: 1px solid #ddd !important;
+            }
+            .dashboard {
+                display: block !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -977,6 +1010,14 @@
         <header>
             <h1>🏗️ Advanced Concrete Mix Design Dashboard</h1>
             <p>Professional Mix Design with SCMs, Fine Aggregate Alternatives & Chemical Admixtures</p>
+            
+            <div class="action-buttons" style="display: flex; gap: 10px; justify-content: center; margin-top: 15px; flex-wrap: wrap;">
+                <button class="action-btn" onclick="saveMix()" style="background: linear-gradient(135deg, #4caf50, #388e3c); color: white; padding: 10px 20px; border: none; border-radius: 20px; font-weight: 600; cursor: pointer;">💾 Save Mix</button>
+                <button class="action-btn" onclick="loadMix()" style="background: linear-gradient(135deg, #2196f3, #1565c0); color: white; padding: 10px 20px; border: none; border-radius: 20px; font-weight: 600; cursor: pointer;">📂 Load Mix</button>
+                <button class="action-btn" onclick="compareMix()" style="background: linear-gradient(135deg, #ff9800, #f57c00); color: white; padding: 10px 20px; border: none; border-radius: 20px; font-weight: 600; cursor: pointer;">⚖️ Compare</button>
+                <button class="action-btn" onclick="exportToPDF()" style="background: linear-gradient(135deg, #e91e63, #c2185b); color: white; padding: 10px 20px; border: none; border-radius: 20px; font-weight: 600; cursor: pointer;">📄 Export PDF</button>
+                <button class="action-btn" onclick="generateQR()" style="background: linear-gradient(135deg, #9c27b0, #7b1fa2); color: white; padding: 10px 20px; border: none; border-radius: 20px; font-weight: 600; cursor: pointer;">📱 QR Code</button>
+            </div>
         </header>
 
         <!-- Quick Presets -->
@@ -1438,6 +1479,41 @@
                 </div>
             </div>
 
+            <!-- Cost Calculator -->
+            <div class="card" style="border: 2px solid #4caf50;">
+                <h2 style="background: linear-gradient(90deg, #4caf50, #388e3c); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; border-image: linear-gradient(90deg, #4caf50, #388e3c) 1;">💰 Cost Calculator</h2>
+                <div class="form-group">
+                    <label>OPC Cement Cost (per kg)</label>
+                    <input type="number" id="cementCost" value="8" step="0.5" min="0" onchange="calculateMix(false)">
+                </div>
+                <div class="form-group">
+                    <label>SCM Cost (per kg) <span class="label-info">Avg for Fly Ash/GGBS</span></label>
+                    <input type="number" id="scmCost" value="2" step="0.5" min="0" onchange="calculateMix(false)">
+                </div>
+                <div class="form-group">
+                    <label>Fine Aggregate Cost (per kg)</label>
+                    <input type="number" id="fineAggCost" value="1.5" step="0.1" min="0" onchange="calculateMix(false)">
+                </div>
+                <div class="form-group">
+                    <label>Coarse Aggregate Cost (per kg)</label>
+                    <input type="number" id="coarseAggCost" value="1.2" step="0.1" min="0" onchange="calculateMix(false)">
+                </div>
+                <div class="form-group">
+                    <label>Admixture Cost (per kg)</label>
+                    <input type="number" id="admixtureCost" value="150" step="10" min="0" onchange="calculateMix(false)">
+                </div>
+                <div class="form-group">
+                    <label>Currency Symbol</label>
+                    <select id="currencySymbol" onchange="calculateMix(false)">
+                        <option value="₨">₨ (Pakistani Rupee)</option>
+                        <option value="$">$ (US Dollar)</option>
+                        <option value="€">€ (Euro)</option>
+                        <option value="£">£ (British Pound)</option>
+                        <option value="₹">₹ (Indian Rupee)</option>
+                    </select>
+                </div>
+            </div>
+
             <!-- Material Properties -->
             <div class="card">
                 <h2>🔧 Cement & Parameters</h2>
@@ -1576,6 +1652,43 @@
                         <p id="sustainabilityDetails" style="color: #2e7d32;"></p>
                     </div>
                 </div>
+
+                <!-- Cost Breakdown -->
+                <div class="info-box" style="background: linear-gradient(135deg, #fff9c4 0%, #fff59d 100%); border-left-color: #fbc02d;">
+                    <h3 style="color: #f57f17;">💰 Cost Breakdown (for <span id="costVolume">1</span> m³)</h3>
+                    <p id="costBreakdown" style="color: #f57f17;"></p>
+                </div>
+
+                <!-- Sustainability Score -->
+                <div class="info-box" style="background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); border-left-color: #66bb6a;">
+                    <h3 style="color: #2e7d32;">🌍 Sustainability Score</h3>
+                    <div id="sustainabilityScore"></div>
+                </div>
+
+                <!-- Strength Prediction -->
+                <div class="concrete-type-box">
+                    <h3>📈 Strength Development Prediction</h3>
+                    <div id="strengthPrediction"></div>
+                </div>
+
+                <!-- Curing Schedule -->
+                <div class="admixture-box">
+                    <h3>⏱️ Recommended Curing Schedule</h3>
+                    <div id="curingSchedule"></div>
+                </div>
+            </div>
+
+            <!-- Comparison Tool -->
+            <div class="card results-card" id="comparisonCard" style="display: none;">
+                <h2>⚖️ Mix Comparison</h2>
+                <div id="comparisonResults"></div>
+            </div>
+
+            <!-- QR Code Display -->
+            <div class="card results-card" id="qrCard" style="display: none; text-align: center;">
+                <h2>📱 QR Code - Share This Mix</h2>
+                <div id="qrCodeDisplay"></div>
+                <p style="margin-top: 15px; color: #666;">Scan this QR code to share the mix design</p>
             </div>
         </div>
 
@@ -2410,6 +2523,76 @@
                 document.getElementById('sustainabilityInfo').style.display = 'none';
             }
 
+            // ===== COST CALCULATOR =====
+            const totalAdmixtureWeight = (useSuperplasticizer ? finalTotalCementitious * 0.015 : 0) + 
+                                        (useFibers ? parseFloat(document.getElementById('fiberDosage')?.value || 0) : 0);
+            const costData = calculateCost(opcWeight, scmWeight, fineAggWeight, coarseAggWeight, totalAdmixtureWeight, volume);
+            document.getElementById('costVolume').textContent = volume;
+            document.getElementById('costBreakdown').innerHTML = `
+                <strong>OPC Cement:</strong> ${costData.currency} ${costData.opcTotal} | 
+                <strong>SCM:</strong> ${costData.currency} ${costData.scmTotal} | 
+                <strong>Fine Agg:</strong> ${costData.currency} ${costData.fineTotal} | 
+                <strong>Coarse Agg:</strong> ${costData.currency} ${costData.coarseTotal} | 
+                <strong>Admixtures:</strong> ${costData.currency} ${costData.admixTotal}<br>
+                <strong style="font-size: 1.1rem;">TOTAL: ${costData.currency} ${costData.grandTotal}</strong> 
+                (${costData.currency} ${costData.perCubicMeter} per m³)`;
+
+            // ===== SUSTAINABILITY SCORE =====
+            const sustainScore = calculateSustainabilityScore(totalSCMPercent, fineAggType === 'msand' || fineAggType === 'mixed', false, waterReduction);
+            document.getElementById('sustainabilityScore').innerHTML = `
+                <div style="text-align: center;">
+                    <div style="font-size: 3rem; font-weight: bold; color: ${sustainScore.color};">${sustainScore.score}/100</div>
+                    <div style="font-size: 1.3rem; margin-top: 10px; color: ${sustainScore.color};">${sustainScore.rating}</div>
+                    <div style="margin-top: 15px; text-align: left; color: #2e7d32;">
+                        <strong>Score Breakdown:</strong><br>
+                        • SCM Usage: +${Math.min(Math.round(totalSCMPercent * 0.4), 30)} points<br>
+                        • Water Reduction: +${Math.min(Math.round(waterReduction * 0.5), 15)} points<br>
+                        • Sustainable Aggregates: +${fineAggType !== 'natural' ? 5 : 0} points
+                    </div>
+                </div>`;
+
+            // ===== STRENGTH PREDICTION =====
+            const strengthPred = getStrengthPrediction(targetStrength, useFlyAsh, useGGBS, useSilicaFume);
+            document.getElementById('strengthPrediction').innerHTML = `
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; text-align: center;">
+                    <div style="background: #f5f5f5; padding: 15px; border-radius: 10px;">
+                        <div style="font-size: 0.9rem; color: #666;">3 Days</div>
+                        <div style="font-size: 1.5rem; font-weight: bold; color: #667eea;">${strengthPred.day3}</div>
+                        <div style="font-size: 0.8rem; color: #888;">MPa</div>
+                    </div>
+                    <div style="background: #f5f5f5; padding: 15px; border-radius: 10px;">
+                        <div style="font-size: 0.9rem; color: #666;">7 Days</div>
+                        <div style="font-size: 1.5rem; font-weight: bold; color: #667eea;">${strengthPred.day7}</div>
+                        <div style="font-size: 0.8rem; color: #888;">MPa</div>
+                    </div>
+                    <div style="background: #e8f5e9; padding: 15px; border-radius: 10px; border: 2px solid #4caf50;">
+                        <div style="font-size: 0.9rem; color: #2e7d32;">28 Days</div>
+                        <div style="font-size: 1.5rem; font-weight: bold; color: #2e7d32;">${strengthPred.day28}</div>
+                        <div style="font-size: 0.8rem; color: #2e7d32;">MPa (Target)</div>
+                    </div>
+                    <div style="background: #f5f5f5; padding: 15px; border-radius: 10px;">
+                        <div style="font-size: 0.9rem; color: #666;">56 Days</div>
+                        <div style="font-size: 1.5rem; font-weight: bold; color: #667eea;">${strengthPred.day56}</div>
+                        <div style="font-size: 0.8rem; color: #888;">MPa</div>
+                    </div>
+                    <div style="background: #f5f5f5; padding: 15px; border-radius: 10px;">
+                        <div style="font-size: 0.9rem; color: #666;">90 Days</div>
+                        <div style="font-size: 1.5rem; font-weight: bold; color: #667eea;">${strengthPred.day90}</div>
+                        <div style="font-size: 0.8rem; color: #888;">MPa</div>
+                    </div>
+                </div>
+                <p style="margin-top: 15px; color: #6a1b9a; font-size: 0.9rem;">
+                    <strong>Note:</strong> Strength development varies with curing conditions, temperature, and material quality.
+                </p>`;
+
+            // ===== CURING SCHEDULE =====
+            const curingInfo = getCuringSchedule(concreteTypeInfo.type, useGGBS, useFlyAsh);
+            document.getElementById('curingSchedule').innerHTML = `
+                <p style="color: #1565c0;"><strong>Minimum Duration:</strong> ${curingInfo.minimum}</p>
+                <p style="color: #1565c0;"><strong>Recommended Duration:</strong> ${curingInfo.recommended}</p>
+                <p style="color: #1565c0;"><strong>Curing Method:</strong> ${curingInfo.method}</p>
+                <p style="color: #1565c0;"><strong>Important Notes:</strong> ${curingInfo.notes}</p>`;
+
             document.getElementById('resultsCard').style.display = 'block';
             
             // Only scroll to results if explicitly requested (button click)
@@ -2418,6 +2601,285 @@
                     document.getElementById('resultsCard').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                 }, 100);
             }
+        }
+
+        // ========== ADVANCED FEATURES ==========
+
+        // Save Mix to localStorage
+        function saveMix() {
+            const mixName = prompt("Enter a name for this mix design:", "Mix-" + new Date().toLocaleDateString());
+            if (!mixName) return;
+            
+            const mixData = {
+                name: mixName,
+                date: new Date().toISOString(),
+                grade: document.getElementById('concreteGrade').value,
+                results: {
+                    cement: document.getElementById('cementResult').textContent,
+                    water: document.getElementById('waterResult').textContent,
+                    fineAgg: document.getElementById('fineResult').textContent,
+                    coarseAgg: document.getElementById('coarseResult').textContent,
+                    wcRatio: document.getElementById('wcRatio').textContent,
+                    strength: document.getElementById('mixStrength').textContent
+                },
+                type: document.getElementById('concreteTypeBadge').textContent
+            };
+            
+            let savedMixes = JSON.parse(localStorage.getItem('concreteMixes') || '[]');
+            savedMixes.push(mixData);
+            localStorage.setItem('concreteMixes', JSON.stringify(savedMixes));
+            
+            alert(`✅ Mix "${mixName}" saved successfully!\n\nTotal saved mixes: ${savedMixes.length}`);
+        }
+
+        // Load Mix from localStorage
+        function loadMix() {
+            const savedMixes = JSON.parse(localStorage.getItem('concreteMixes') || '[]');
+            if (savedMixes.length === 0) {
+                alert('No saved mixes found! Save a mix first.');
+                return;
+            }
+            
+            let mixList = "Select a mix to load:\n\n";
+            savedMixes.forEach((mix, index) => {
+                mixList += `${index + 1}. ${mix.name} (${mix.type}) - ${new Date(mix.date).toLocaleDateString()}\n`;
+            });
+            
+            const selection = prompt(mixList + "\nEnter number (or 'delete all' to clear):");
+            
+            if (selection === 'delete all') {
+                if (confirm('Delete all saved mixes?')) {
+                    localStorage.removeItem('concreteMixes');
+                    alert('All mixes deleted!');
+                }
+                return;
+            }
+            
+            const index = parseInt(selection) - 1;
+            if (index >= 0 && index < savedMixes.length) {
+                alert(`Loaded: ${savedMixes[index].name}\n\nNote: This loads results only. Adjust parameters to recreate the mix.`);
+            }
+        }
+
+        // Compare current mix with saved mix
+        let comparisonMix = null;
+        function compareMix() {
+            if (!comparisonMix) {
+                comparisonMix = {
+                    name: "Mix 1",
+                    cement: document.getElementById('cementResult').textContent,
+                    water: document.getElementById('waterResult').textContent,
+                    wcRatio: document.getElementById('wcRatio').textContent,
+                    strength: document.getElementById('mixStrength').textContent,
+                    type: document.getElementById('concreteTypeBadge').textContent
+                };
+                alert('✅ Mix 1 saved for comparison!\n\nAdjust parameters for Mix 2, then click Compare again.');
+                return;
+            }
+            
+            // Show comparison
+            const mix2 = {
+                name: "Mix 2",
+                cement: document.getElementById('cementResult').textContent,
+                water: document.getElementById('waterResult').textContent,
+                wcRatio: document.getElementById('wcRatio').textContent,
+                strength: document.getElementById('mixStrength').textContent,
+                type: document.getElementById('concreteTypeBadge').textContent
+            };
+            
+            const comparisonHTML = `
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tr style="background: #f5f5f5;">
+                        <th style="padding: 12px; border: 1px solid #ddd;">Parameter</th>
+                        <th style="padding: 12px; border: 1px solid #ddd;">Mix 1</th>
+                        <th style="padding: 12px; border: 1px solid #ddd;">Mix 2</th>
+                        <th style="padding: 12px; border: 1px solid #ddd;">Difference</th>
+                    </tr>
+                    <tr><td style="padding: 10px; border: 1px solid #ddd;">Type</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">${comparisonMix.type}</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">${mix2.type}</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">-</td></tr>
+                    <tr><td style="padding: 10px; border: 1px solid #ddd;">Cement (kg/m³)</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">${comparisonMix.cement}</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">${mix2.cement}</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">${mix2.cement - comparisonMix.cement}</td></tr>
+                    <tr><td style="padding: 10px; border: 1px solid #ddd;">Water (kg/m³)</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">${comparisonMix.water}</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">${mix2.water}</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">${mix2.water - comparisonMix.water}</td></tr>
+                    <tr><td style="padding: 10px; border: 1px solid #ddd;">W/C Ratio</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">${comparisonMix.wcRatio}</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">${mix2.wcRatio}</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">${(mix2.wcRatio - comparisonMix.wcRatio).toFixed(2)}</td></tr>
+                    <tr><td style="padding: 10px; border: 1px solid #ddd;">Strength (MPa)</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">${comparisonMix.strength}</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">${mix2.strength}</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">${mix2.strength - comparisonMix.strength}</td></tr>
+                </table>
+                <button onclick="comparisonMix = null; document.getElementById('comparisonCard').style.display = 'none';" 
+                        style="margin-top: 15px; padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer;">
+                    🔄 New Comparison
+                </button>
+            `;
+            
+            document.getElementById('comparisonResults').innerHTML = comparisonHTML;
+            document.getElementById('comparisonCard').style.display = 'block';
+            document.getElementById('comparisonCard').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // Export to PDF
+        function exportToPDF() {
+            window.print();
+        }
+
+        // Generate QR Code
+        function generateQR() {
+            const mixData = {
+                grade: document.getElementById('concreteGrade').value,
+                cement: document.getElementById('cementResult').textContent,
+                water: document.getElementById('waterResult').textContent,
+                wcRatio: document.getElementById('wcRatio').textContent,
+                type: document.getElementById('concreteTypeBadge').textContent
+            };
+            
+            const dataString = encodeURIComponent(JSON.stringify(mixData));
+            const qrAPI = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${dataString}`;
+            
+            document.getElementById('qrCodeDisplay').innerHTML = `<img src="${qrAPI}" alt="QR Code" style="max-width: 300px; border: 3px solid #9c27b0; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">`;
+            document.getElementById('qrCard').style.display = 'block';
+            document.getElementById('qrCard').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // Calculate Cost
+        function calculateCost(opcWeight, scmWeight, fineWeight, coarseWeight, admixtureWeight, volume) {
+            const currency = document.getElementById('currencySymbol').value;
+            const cementCost = parseFloat(document.getElementById('cementCost').value);
+            const scmCost = parseFloat(document.getElementById('scmCost').value);
+            const fineCost = parseFloat(document.getElementById('fineAggCost').value);
+            const coarseCost = parseFloat(document.getElementById('coarseAggCost').value);
+            const admixCost = parseFloat(document.getElementById('admixtureCost').value);
+            
+            const opcTotal = (opcWeight * volume * cementCost).toFixed(2);
+            const scmTotal = (scmWeight * volume * scmCost).toFixed(2);
+            const fineTotal = (fineWeight * volume * fineCost).toFixed(2);
+            const coarseTotal = (coarseWeight * volume * coarseCost).toFixed(2);
+            const admixTotal = (admixtureWeight * volume * admixCost).toFixed(2);
+            const grandTotal = (parseFloat(opcTotal) + parseFloat(scmTotal) + parseFloat(fineTotal) + parseFloat(coarseTotal) + parseFloat(admixTotal)).toFixed(2);
+            
+            return {
+                currency,
+                opcTotal,
+                scmTotal,
+                fineTotal,
+                coarseTotal,
+                admixTotal,
+                grandTotal,
+                perCubicMeter: (grandTotal / volume).toFixed(2)
+            };
+        }
+
+        // Calculate Sustainability Score
+        function calculateSustainabilityScore(scmPercent, useMSand, useRecycled, waterReduction) {
+            let score = 50; // Base score
+            
+            // SCM usage (max 30 points)
+            score += Math.min(scmPercent * 0.4, 30);
+            
+            // Water reduction (max 15 points)
+            score += Math.min(waterReduction * 0.5, 15);
+            
+            // M-Sand usage (5 points)
+            if (useMSand) score += 5;
+            
+            score = Math.min(Math.round(score), 100);
+            
+            let rating = score >= 90 ? '🌟 Excellent' : score >= 75 ? '✅ Very Good' : score >= 60 ? '👍 Good' : score >= 40 ? '⚠️ Fair' : '❌ Poor';
+            let color = score >= 90 ? '#2e7d32' : score >= 75 ? '#388e3c' : score >= 60 ? '#fbc02d' : score >= 40 ? '#f57c00' : '#d32f2f';
+            
+            return { score, rating, color };
+        }
+
+        // Get Strength Prediction
+        function getStrengthPrediction(targetStrength, hasFlyAsh, hasGGBS, hasSilicaFume) {
+            let day3, day7, day28, day56, day90;
+            
+            if (hasSilicaFume) {
+                day3 = targetStrength * 0.75;
+                day7 = targetStrength * 0.90;
+                day28 = targetStrength;
+                day56 = targetStrength * 1.05;
+                day90 = targetStrength * 1.10;
+            } else if (hasGGBS) {
+                day3 = targetStrength * 0.45;
+                day7 = targetStrength * 0.65;
+                day28 = targetStrength;
+                day56 = targetStrength * 1.10;
+                day90 = targetStrength * 1.25;
+            } else if (hasFlyAsh) {
+                day3 = targetStrength * 0.55;
+                day7 = targetStrength * 0.70;
+                day28 = targetStrength;
+                day56 = targetStrength * 1.08;
+                day90 = targetStrength * 1.18;
+            } else {
+                day3 = targetStrength * 0.65;
+                day7 = targetStrength * 0.80;
+                day28 = targetStrength;
+                day56 = targetStrength * 1.03;
+                day90 = targetStrength * 1.06;
+            }
+            
+            return {
+                day3: Math.round(day3),
+                day7: Math.round(day7),
+                day28: Math.round(day28),
+                day56: Math.round(day56),
+                day90: Math.round(day90)
+            };
+        }
+
+        // Get Curing Schedule
+        function getCuringSchedule(concreteType, hasGGBS, hasFlyAsh) {
+            let schedule = {};
+            
+            if (concreteType.includes('Foam')) {
+                schedule = {
+                    minimum: '3 days',
+                    recommended: '7 days',
+                    method: 'Moist curing or curing compound',
+                    notes: 'Protect from rapid drying. Start curing after 24 hours of setting.'
+                };
+            } else if (hasGGBS) {
+                schedule = {
+                    minimum: '14 days',
+                    recommended: '21-28 days',
+                    method: 'Continuous water curing (ponding or wet burlap)',
+                    notes: 'Extended curing critical for GGBS. Prevent early drying to achieve full strength.'
+                };
+            } else if (hasFlyAsh) {
+                schedule = {
+                    minimum: '10 days',
+                    recommended: '14-21 days',
+                    method: 'Water curing or curing compound',
+                    notes: 'Fly ash concrete requires longer curing than OPC for strength development.'
+                };
+            } else if (concreteType.includes('UHPC') || concreteType.includes('High-Performance')) {
+                schedule = {
+                    minimum: '7 days',
+                    recommended: '14 days',
+                    method: 'Water curing, start immediately after finishing',
+                    notes: 'High-performance concrete is susceptible to plastic shrinkage. Cure immediately.'
+                };
+            } else {
+                schedule = {
+                    minimum: '7 days',
+                    recommended: '14 days',
+                    method: 'Water curing, wet covering, or curing compound',
+                    notes: 'Standard curing for normal concrete. Maintain moisture for hydration.'
+                };
+            }
+            
+            return schedule;
         }
 
         window.addEventListener('load', function() {
